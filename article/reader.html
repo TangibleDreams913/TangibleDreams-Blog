@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TangibleDreams - 文章阅读</title>
+  <meta name="description" content="TangibleDreams 的文章在线阅读页">
+  <script src="/assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="/assets/css/common.css">
+  <link rel="stylesheet" href="/assets/css/article.css">
+  <link rel="icon" type="image/png" href="/assets/icons/head.png">
+  <meta property="og:site_name" content="TangibleDreams">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="TangibleDreams - 文章阅读">
+  <meta property="og:description" content="TangibleDreams 的文章在线阅读页">
+  <meta property="og:url" content="https://tangibledreams.top/article/reader.html">
+  <meta property="og:image" content="https://tangibledreams.top/assets/icons/head.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="TangibleDreams - 文章阅读">
+  <meta name="twitter:description" content="TangibleDreams 的文章在线阅读页">
+  <meta name="twitter:image" content="https://tangibledreams.top/assets/icons/head.png">
+</head>
+<body>
+  <header id="site-nav"></header>
+
+  <main class="container">
+    <div class="reader-panel">
+      <div class="reader-head">
+        <div class="reader-toolbar">
+          <a class="btn" id="reader-back" href="/article/index.html">« 返回文章列表</a>
+          <div class="reader-font-group">
+            <button class="btn" id="reader-font-smaller" type="button" aria-label="减小字号">A-</button>
+            <button class="btn" id="reader-font-larger" type="button" aria-label="增大字号">A+</button>
+          </div>
+        </div>
+        <h1 class="reader-title" id="reader-title">加载中…</h1>
+        <div class="reader-meta" id="reader-meta"></div>
+        <p class="reader-desc" id="reader-desc"></p>
+      </div>
+
+      <div class="reader-toolbar">
+        <span class="reader-count" id="reader-count"></span>
+        <a class="btn" id="reader-download" href="#" download style="display:none">下载 TXT</a>
+      </div>
+
+      <div class="reader-body" id="reader-body">
+        <div class="status-box">正文加载中…</div>
+      </div>
+
+      <div class="reader-foot">
+        <a class="btn" href="/article/index.html">« 返回文章列表</a>
+        <span class="reader-count" id="reader-count-foot"></span>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> TangibleDreams 版权所有，未经许可不得转载。</p>
+    <p>本网站基于 ckckh2023 的 xiao-blog 构建，遵循 MIT 许可证。</p>
+    <p>Powered by Cloudflare Pages</p>
+  </footer>
+
+  <script src="/assets/js/common.js"></script>
+  <script src="/assets/js/article.js"></script>
+  <script src="/assets/js/article-reader.js"></script>
+</body>
+</html>

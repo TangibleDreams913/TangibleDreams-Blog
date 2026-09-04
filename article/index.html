@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TangibleDreams - 文章</title>
+  <meta name="description" content="TangibleDreams 的文章收藏与在线阅读">
+  <script src="/assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="/assets/css/common.css">
+  <link rel="stylesheet" href="/assets/css/article.css">
+  <link rel="icon" type="image/png" href="/assets/icons/head.png">
+  <link rel="canonical" href="https://tangibledreams.top/article/index.html">
+  <meta property="og:site_name" content="TangibleDreams">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="TangibleDreams - 文章">
+  <meta property="og:description" content="TangibleDreams 的文章收藏与在线阅读">
+  <meta property="og:url" content="https://tangibledreams.top/article/index.html">
+  <meta property="og:image" content="https://tangibledreams.top/assets/icons/head.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="TangibleDreams - 文章">
+  <meta name="twitter:description" content="TangibleDreams 的文章收藏与在线阅读">
+  <meta name="twitter:image" content="https://tangibledreams.top/assets/icons/head.png">
+</head>
+<body>
+  <header id="site-nav"></header>
+
+  <main class="container wide">
+    <div class="section-title">
+      <div class="title-left">
+        <span>全部文章</span>
+        <div id="novel-search"></div>
+      </div>
+      <a class="more-link" href="/index.html">« 返回首页</a>
+    </div>
+
+    <div id="all-article">
+      <div class="status-box">加载中…</div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> TangibleDreams 版权所有，未经许可不得转载。</p>
+    <p>本网站基于 ckckh2023 的 xiao-blog 构建，遵循 MIT 许可证。</p>
+    <p>Powered by Cloudflare Pages</p>
+  </footer>
+
+  <script src="/assets/js/common.js"></script>
+  <script src="/assets/js/article.js"></script>
+  <script>
+    /* 全部文章：从 /article/NovelList.json 加载；搜索对标题 / 作者 / 简介实时过滤 */
+    var allarticle = [];
+
+    function matchNovel(it, q) {
+      if (!q) return true;
+      var fields = [it.title, it.author, it.description, it.id];
+      for (var i = 0; i < fields.length; i++) {
+        if (fields[i] && String(fields[i]).toLowerCase().indexOf(q) !== -1) return true;
+      }
+      return false;
+    }
+
+    function renderarticle(list, hasQuery) {
+      var box = document.getElementById("all-article");
+      if (!list.length) {
+        box.innerHTML = '<div class="status-box">' +
+          (hasQuery ? "未找到匹配的文章。" : "暂无文章，请等待博主上传。") + "</div>";
+        return;
+      }
+      mountNovelGrid("#all-article", list, 2);
+    }
+
+    fetchNovelList().then(function (list) {
+      allarticle = list;
+      renderarticle(allarticle, false);
+      mountSearchBox("#novel-search", {
+        placeholder: "搜索文章…",
+        onQuery: function (q) {
+          renderarticle(allarticle.filter(function (it) { return matchNovel(it, q); }), !!q);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

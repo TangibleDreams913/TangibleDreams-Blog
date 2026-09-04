@@ -1,0 +1,13 @@
+{
+  "name": "tangibledreams-blog",
+  "version": "1.0.0",
+  "private": true,
+  "description": "个人主页",
+  "scripts": {
+    "build": "node scripts/generate-thumbnails.mjs",
+    "deploy": "npm run build && wrangler pages deploy . --project-name=tangibledreams"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.4"
+  }
+}

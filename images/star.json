@@ -1,0 +1,26 @@
+[
+    {
+        "id": "iroha natsume 0",
+        "title": "枣伊吕波 1",
+        "description": "AI生成",
+        "src": "photos/iroha_natsume_0.png",
+        "thumb": "thumbs/iroha_natsume_0.webp",
+        "date": "2026-09-01"
+    },
+    {
+        "id": "hoshino takanashi 0",
+        "title": "小鸟游星野 1",
+        "description": "AI生成",
+        "src": "photos/hoshino_takanashi_0.png",
+        "thumb": "thumbs/hoshino_takanashi_0.webp",
+        "date": "2026-09-01"
+    },
+    {
+        "id": "TD2",
+        "title": "TangibleDreams 3",
+        "description": "AI生成，角色使用CC BY-NC 4.0进行共享",
+        "src": "photos/oc_2.jpg",
+        "thumb": "thumbs/oc_2.webp",
+        "date": "2026-09-01"
+    }
+]

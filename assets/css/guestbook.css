@@ -1,0 +1,297 @@
+/* ============================================================
+   guestbook.css - 留言板样式（自制发布表单 + 卡片式留言墙）
+   加载页面：/guestbook/index.html
+   ============================================================ */
+
+/* ---------- 发布表单 ---------- */
+.gb-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gb-form-row {
+  display: flex;
+  gap: 12px;
+}
+.gb-input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.gb-input::placeholder { color: var(--text-muted); }
+.gb-input:focus {
+  border-color: var(--link);
+  box-shadow: 0 0 0 3px var(--active-bg);
+}
+.gb-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  resize: vertical;
+  min-height: 96px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+}
+.gb-textarea::placeholder { color: var(--text-muted); }
+.gb-textarea:focus {
+  border-color: var(--link);
+  box-shadow: 0 0 0 3px var(--active-bg);
+}
+.gb-form-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.gb-form-hint {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.gb-form-hint-err { color: #d33; }
+.gb-submitting { opacity: 0.75; cursor: wait; }
+.gb-form-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ---------- 留言卡片 ---------- */
+.guestbook-wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr));
+  gap: 20px;
+}
+.gb-card {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+/* #id 徽章（卡片右上角） */
+.gb-id {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 1;
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1px 7px;
+  line-height: 1.5;
+}
+.gb-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.gb-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.gb-avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--link);
+}
+.gb-meta {
+  min-width: 0;
+  flex: 1;
+}
+.gb-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gb-time {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.gb-body {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.7;
+  word-break: break-word;
+  flex: 1;
+  margin-bottom: 12px;
+}
+.gb-body a { color: var(--link); }
+.gb-body a:hover { color: var(--link-hover); }
+
+/* ---------- 留言正文（支持 Markdown） ---------- */
+.gb-body p { margin: 0 0 10px; }
+.gb-body p:last-child { margin-bottom: 0; }
+.gb-body a { color: var(--link); }
+.gb-body a:hover { color: var(--link-hover); }
+.gb-body code {
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  font-size: 13px;
+}
+.gb-body pre {
+  padding: 12px;
+  border-radius: 6px;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+}
+.gb-body pre code { padding: 0; border: none; background: none; }
+.gb-body ul, .gb-body ol { padding-left: 22px; margin: 0 0 10px; }
+.gb-body li + li { margin-top: 4px; }
+.gb-body blockquote {
+  margin: 0 0 10px;
+  padding: 2px 12px;
+  border-left: 4px solid var(--border);
+  color: var(--text-muted);
+}
+.gb-body h1, .gb-body h2, .gb-body h3, .gb-body h4 {
+  margin: 8px 0;
+  font-size: 1.05em;
+  line-height: 1.4;
+}
+.gb-body img { max-width: 100%; border-radius: 6px; margin: 4px 0; }
+.gb-body table { border-collapse: collapse; margin: 0 0 10px; font-size: 13px; }
+  .gb-body th, .gb-body td { border: 1px solid var(--border); padding: 6px 10px; }
+
+/* 正文截断（多列时超过 5 行）+ 展开按钮 */
+.gb-body.is-clamp {
+  flex: 0 0 auto;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+}
+.gb-toggle {
+  align-self: flex-start;
+  margin: -2px 0 12px;
+  padding: 2px 0;
+  font-size: 13px;
+  color: var(--link);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.gb-toggle:hover { color: var(--link-hover); text-decoration: underline; }
+
+/* 留言正文弹窗 */
+.gb-dialog-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  animation: gb-dialog-fade 0.18s ease;
+}
+@keyframes gb-dialog-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.gb-dialog {
+  position: relative;
+  width: min(560px, 100%);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  padding: 22px;
+  animation: gb-dialog-pop 0.18s ease;
+}
+@keyframes gb-dialog-pop {
+  from { transform: translateY(8px) scale(0.98); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+.gb-dialog-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+.gb-dialog-close:hover { background: var(--code-bg); color: var(--text); }
+.gb-dialog .gb-header { flex-shrink: 0; }
+.gb-dialog-body {
+  color: var(--text);
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.gb-dialog-body::-webkit-scrollbar { display: none; }
+
+/* ---------- 移动端：表单两列堆叠 ---------- */
+@media (max-width: 600px) {
+  .gb-form-row { flex-direction: column; }
+}
+
+/* ---------- 刷新按钮（图标按钮，点击转圈） ---------- */
+#guestbook-refresh {
+  padding: 6px;
+  line-height: 0;
+}
+#guestbook-refresh .gb-refresh-icon {
+  display: block;
+}
+#guestbook-refresh.gb-refreshing {
+  cursor: wait;
+  opacity: 0.75;
+}
+#guestbook-refresh.gb-refreshing .gb-refresh-icon {
+  animation: gb-spin 0.8s linear infinite;
+}
+@keyframes gb-spin {
+  to { transform: rotate(360deg); }
+}
