@@ -13,7 +13,7 @@
 - **图片**：PNG 静态文件 + JSON 清单，构建脚本自动生成 WebP 缩略图，点击图片灯箱预览
 - **音乐**：WAV 静态文件 + JSON 清单，HTML5 在线播放 + 下载
 - **留言板**：Cloudflare D1 持久化，Markdown 内容，IP 加盐哈希 + 频率限制
-- **好友页**：当前为占位符，后续可扩展
+- **好友页**：好友列表（数据来自 FriendList.json）
 - **关于页**：站点统计、联系方式、隐私政策
 - **RSS 订阅**：Edge Function 动态生成 RSS 2.0（以文章更新为条目）
 - **Markdown for Agents**：内容协商，智能体请求 `Accept: text/markdown` 时返回干净的去格式化 Markdown（默认仍返回 HTML）
@@ -25,7 +25,7 @@
 | 层级 | 技术 |
 |------|------|
 | 前端 | HTML / CSS / JavaScript |
-| Markdown | marked 4.3 + DOMPurify（留言板） |
+| Markdown | marked 4.3（本地 vendor）+ DOMPurify（CDN，留言板） |
 | 后端 | Cloudflare Pages Functions |
 | 数据库 | Cloudflare D1 SQLite |
 | 缩略图 | Node.js + sharp（仅构建时） |
@@ -34,37 +34,59 @@
 ## 目录结构
 
 ```text
-├── index.html              # 首页（聚合精选内容）
-├── wrangler.toml           # Cloudflare Pages 配置（D1 绑定）
-├── schema.sql              # 留言板建表 SQL
-├── package.json            # 构建脚本（图片缩略图）
+├── index.html                  # 首页（聚合精选内容）
+├── 404.html                    # 404 页面
+├── LICENSE                     # 许可协议（代码 MIT / 内容 CC BY-NC-ND）
+├── README.md                   # 项目说明（本文件）
+├── .gitignore
+├── .assetsignore               # Cloudflare Pages 部署时忽略的文件
+├── package.json                # 构建脚本（图片缩略图）
+├── package-lock.json
+├── robots.txt
+├── schema.sql                  # 留言板建表 SQL
+├── wrangler.toml               # Cloudflare Pages 配置（D1 绑定）
 ├── scripts/
-│   └── generate-thumbnails.mjs
+│   └── generate-thumbnails.mjs # 生成图片 WebP 缩略图
 ├── article/
-│   ├── index.html          # 文章列表
-│   ├── reader.html         # 文章在线阅读页
-│   ├── NovelList.json      # 文章清单
-│   ├── star.json           # 首页精选文章
-│   └── books/              # 存放 TXT 文件
+│   ├── index.html              # 文章列表
+│   ├── reader.html             # 文章在线阅读页
+│   ├── NovelList.json          # 文章清单
+│   ├── star.json               # 首页精选文章
+│   ├── articles/               # 存放文章 TXT 文件
+│   └── weinidingzhi.txt        # 文章正文（示例）
 ├── images/
-│   ├── index.html          # 图片画廊
-│   ├── ImageList.json      # 图片清单
-│   ├── star.json           # 首页精选图片
-│   ├── photos/             # 存放 PNG 原图
-│   └── thumbs/             # 构建脚本生成的 WebP 缩略图
+│   ├── index.html              # 图片画廊
+│   ├── ImageList.json          # 图片清单
+│   ├── star.json               # 首页精选图片
+│   ├── photos/                 # 存放原图（PNG / JPG）
+│   └── thumbs/                 # 构建脚本生成的 WebP 缩略图
 ├── music/
-│   ├── index.html          # 音乐列表
-│   ├── MusicList.json      # 音乐清单
-│   ├── star.json           # 首页精选音乐
-│   └── songs/              # 存放 WAV 文件
-├── guestbook/              # 留言板
-├── friend/                 # 好友页（占位符）
-├── about/                  # 关于页
+│   ├── index.html              # 音乐列表
+│   ├── MusicList.json          # 音乐清单
+│   ├── star.json               # 首页精选音乐
+│   └── songs/                  # 存放音频（WAV / MP3）
+├── guestbook/                  # 留言板
+├── friend/                     # 好友页
+│   ├── index.html
+│   └── FriendList.json
+├── about/                      # 关于页
+├── assets/
+│   ├── css/                    # 各页面样式
+│   ├── js/                     # 各页面脚本（含 theme-init.js、gb-card.js）
+│   ├── icons/                  # 图标（head.png、ckckh2023.jpg）
+│   └── vendor/                 # 第三方库（marked.min.js）
 └── functions/
-    ├── _middleware.js            # 全局中间件（Link 头 + Markdown 协商）
+    ├── _middleware.js          # 全局中间件（Link 头 + Markdown 协商）
     ├── _lib/
     │   └── markdown-for-agents.js # Markdown for Agents 生成逻辑（内容协商）
-    ├── api/guestbook.js
+    ├── .well-known/
+    │   └── api-catalog.js      # API 目录（RFC 9727）
+    ├── api/
+    │   ├── guestbook.js        # 留言板 API 主体
+    │   └── guestbook/
+    │       ├── docs.js         # API 文档
+    │       ├── openapi.json.js # OpenAPI 规范
+    │       └── status.js       # 健康检查
     ├── rss.xml.js
     └── sitemap.xml.js
 ```
@@ -84,7 +106,7 @@ curl -H "Accept: text/markdown" "https://tangibledreams.top/article/reader.html?
 
 - 携带 `Accept: text/markdown` → 返回 `Content-Type: text/markdown`，并带 `x-markdown-tokens`（近似 token 数）和 `content-signal` 头。
 - 未携带该头（浏览器默认）→ 仍返回普通 HTML。
-- 列表/阅读类页面直接由 JSON / TXT 数据源生成 Markdown，而非对 HTML 做反向转换，因此天然是「去格式化」的纯文本，更加节省Token。
+- 列表/阅读类页面直接由 JSON / TXT 数据源生成 Markdown，而非对 HTML 做反向转换，因此天然是「去格式化」的纯文本，更加节省 Token。
 - 非页面资源（`/assets`、`/api`、`/rss.xml`、`/sitemap.xml` 及图片等二进制）不参与 Markdown 协商，保持原样。
 - 若目标域名接入 Cloudflare 原生「Markdown for Agents（Zone 级）」，本模块可作为应用侧兜底，两者可共存。
 
@@ -109,7 +131,7 @@ npm run build
 wrangler pages deploy . --project-name=tangibledreams
 
 # 数据库初始化（首次或重置）
-wrangler d1 execute td-guestbook --remote --file=./schema.sql
+wrangler d1 execute tangibledreams-guestbook --remote --file=./schema.sql
 ```
 
 如果使用 Cloudflare Pages 的 Git 集成，请在构建配置中设置：
@@ -121,7 +143,7 @@ wrangler d1 execute td-guestbook --remote --file=./schema.sql
 
 ### 文章
 
-1. 将 TXT 文件放入 `article/books/`；
+1. 将 TXT 文件放入 `article/articles/`；
 2. 在 `article/NovelList.json` 中登记：
 
    ```json
@@ -130,7 +152,7 @@ wrangler d1 execute td-guestbook --remote --file=./schema.sql
      "title": "文章标题",
      "author": "作者",
      "description": "简介",
-     "file": "books/my-novel.txt",
+     "file": "articles/my-novel.txt",
      "updated": "2026-08-31"
    }
    ```
