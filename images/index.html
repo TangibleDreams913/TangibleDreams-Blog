@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TangibleDreams - 图片</title>
+  <meta name="description" content="TangibleDreams 的图片画廊">
+  <script src="/assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="/assets/css/common.css">
+  <link rel="stylesheet" href="/assets/css/images.css">
+  <link rel="icon" type="image/png" href="/assets/icons/head.png">
+  <link rel="canonical" href="https://tangibledreams.top/images/index.html">
+  <meta property="og:site_name" content="TangibleDreams">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="TangibleDreams - 图片">
+  <meta property="og:description" content="TangibleDreams 的图片画廊">
+  <meta property="og:url" content="https://tangibledreams.top/images/index.html">
+  <meta property="og:image" content="https://tangibledreams.top/assets/icons/head.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="TangibleDreams - 图片">
+  <meta name="twitter:description" content="TangibleDreams 的图片画廊">
+  <meta name="twitter:image" content="https://tangibledreams.top/assets/icons/head.png">
+</head>
+<body>
+  <header id="site-nav"></header>
+
+  <main class="container wide">
+    <div class="section-title">
+      <div class="title-left">
+        <span>图片画廊</span>
+        <div id="image-search"></div>
+      </div>
+      <a class="more-link" href="/index.html">« 返回首页</a>
+    </div>
+
+    <div id="all-images">
+      <div class="status-box">加载中…</div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> TangibleDreams 版权所有，未经许可不得转载。</p>
+    <p>本网站基于 ckckh2023 的 xiao-blog 构建，遵循 MIT 许可证。</p>
+    <p>Powered by Cloudflare Pages</p>
+  </footer>
+
+  <script src="/assets/js/common.js"></script>
+  <script src="/assets/js/images.js"></script>
+  <script>
+    /* 全部图片：从 /images/ImageList.json 加载；搜索对标题 / 描述 / id 实时过滤 */
+    var allImages = [];
+
+    function matchImage(it, q) {
+      if (!q) return true;
+      var fields = [it.title, it.description, it.id];
+      for (var i = 0; i < fields.length; i++) {
+        if (fields[i] && String(fields[i]).toLowerCase().indexOf(q) !== -1) return true;
+      }
+      return false;
+    }
+
+    function renderImages(list, hasQuery) {
+      var box = document.getElementById("all-images");
+      if (!list.length) {
+        box.innerHTML = '<div class="status-box">' +
+          (hasQuery ? "未找到匹配的图片。" : "暂无图片，请等待博主上传。") + "</div>";
+        return;
+      }
+      mountImageGrid("#all-images", list, 3);
+    }
+
+    fetchImageList().then(function (list) {
+      allImages = list;
+      renderImages(allImages, false);
+      mountSearchBox("#image-search", {
+        placeholder: "搜索图片…",
+        onQuery: function (q) {
+          renderImages(allImages.filter(function (it) { return matchImage(it, q); }), !!q);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

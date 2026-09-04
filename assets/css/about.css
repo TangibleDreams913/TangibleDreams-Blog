@@ -1,0 +1,163 @@
+/* ============================================================
+   about.css - 关于页样式
+   加载页面：/about/index.html
+   ============================================================ */
+
+.about-card {
+  margin-bottom: 20px;
+  padding: 22px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.about-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 14px;
+}
+.about-lead {
+  font-size: 15px;
+  color: var(--text);
+  line-height: 1.7;
+  margin: 0 0 14px;
+}
+
+/* ---------- 网站统计 ---------- */
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.about-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 8px;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.about-stat-num {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--link);
+  line-height: 1;
+}
+.about-stat-label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.about-updated {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 4px 0 0;
+}
+
+/* ---------- 站点信息 dl ---------- */
+.about-info-list {
+  margin: 0;
+}
+.about-info-list dt {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-top: 12px;
+}
+.about-info-list dt:first-child { margin-top: 0; }
+.about-info-list dd {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin: 4px 0 0;
+}
+
+/* ---------- 三列卡片布局（统计下方：联系方式 | RSS | 隐私） ---------- */
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  align-items: stretch;
+}
+.about-grid .about-card {
+  margin-bottom: 0;
+}
+
+/* ---------- 联系方式 ---------- */
+.about-contact-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.about-contact-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+.about-contact-list a {
+  color: var(--link);
+  text-decoration: none;
+}
+.about-contact-list a:hover { text-decoration: underline; }
+/* 待补充的占位链接（如知乎 / CSDN 主页） */
+.about-contact-list a.about-pending {
+  color: var(--text-muted);
+}
+.about-contact-list a.about-pending:hover {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+.about-contact-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ---------- RSS ---------- */
+.about-rss-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.about-rss-card p {
+  margin: 0 0 16px; /* 与按钮的最小间距（卡片矮时 auto margin 会归零，靠这里保底） */
+}
+.about-rss-card .about-rss-btn {
+  margin-top: auto; /* 卡片高时按钮贴底，固定在卡片左下角 */
+  align-self: flex-start;
+}
+
+/* ---------- 隐私政策 ---------- */
+.about-privacy-list {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.8;
+}
+.about-privacy-list li { margin-bottom: 6px; }
+.about-privacy-list strong { color: var(--text); }
+.about-privacy-list em { color: var(--text); font-style: normal; font-weight: 600; }
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 600px) {
+  .about-stats { grid-template-columns: repeat(2, 1fr); }
+  .about-grid { grid-template-columns: 1fr; }
+  .about-card { padding: 18px 16px; }
+}

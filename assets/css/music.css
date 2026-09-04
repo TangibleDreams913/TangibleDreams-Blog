@@ -1,0 +1,45 @@
+/* ============================================================
+   music.css - 音乐栏目样式
+   加载页面：/index.html（精选音乐）、/music/index.html（音乐列表）
+   ============================================================ */
+
+/* ---------- 音乐卡片 ---------- */
+.music-card {
+  display: flex;
+  flex-direction: column;
+}
+.music-card .mc-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.music-card .mc-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.music-card .mc-meta .mc-sep {
+  opacity: 0.6;
+}
+.music-card .mc-desc {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+  flex: 1;
+  margin-bottom: 14px;
+  min-height: 44px;
+}
+.music-card .mc-audio {
+  width: 100%;
+  margin-bottom: 14px;
+}
+.music-card .mc-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: 6px;
+}
