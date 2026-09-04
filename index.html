@@ -39,7 +39,6 @@
       <div class="profile-info">
         <div class="profile-name-wrapper">
 				<h1 id="profile-name">加载中…</h1>
-				<span class="handle-tag">@TangibleDreams913</span>
 			</div>
         <div class="bio" id="profile-bio"></div>
         <div class="meta" id="profile-meta"></div>
@@ -104,36 +103,27 @@
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
   <!-- 留言卡片共享渲染（精选留言，与留言板一致） -->
   <script src="/assets/js/gb-card.js"></script>
-  <!-- 首页专属逻辑（GitHub Profile / 精选留言） -->
+  <!-- 首页专属逻辑（个人信息 / 精选留言） -->
   <script src="/assets/js/home.js"></script>
   <!-- 文章 / 图片 / 音乐卡片渲染 -->
   <script src="/assets/js/article.js"></script>
   <script src="/assets/js/images.js"></script>
   <script src="/assets/js/music.js"></script>
   <script>
-    /* GitHub Octicon SVG */
-    var ICON_REPO = '<svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.48 2.48 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z"/></svg>';
+    /* 地点图标 SVG */
     var ICON_LOCATION = '<svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="m12.596 11.614-.01-.01-.011-.01a4.866 4.866 0 0 0-.119-.116 5.75 5.75 0 0 0-7.756-7.756 4.866 4.866 0 0 0-.116.119l-.01.011-.01.01L0 14.25l3.614-3.614Z"/></svg>';
-    var ICON_ORG = '<svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M1.75 16A1.75 1.75 0 0 1 0 14.25V1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0 1 14.25 16Zm-1.75-1.75v-1.5h16v1.5a.25.25 0 0 1-.25.25H1.75a.25.25 0 0 1-.25-.25ZM1.75 1.5a.25.25 0 0 0-.25.25v9h14v-9a.25.25 0 0 0-.25-.25ZM8 4a2 2 0 1 1-2 2 2 2 0 0 1 2-2ZM4 8.5A1.5 1.5 0 0 1 5.5 7h5a1.5 1.5 0 0 1 1.5 1.5v.5H4Z"/></svg>';
-    var ICON_PEOPLE = '<svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M2 5.5a3.5 3.5 0 1 1 5.898 2.549 5.498 5.498 0 0 1 3.034-.367 3.5 3.5 0 1 1-1.066 2.18 3.5 3.5 0 0 0-2.47-.46A3.5 3.5 0 0 1 2 5.5ZM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>';
 
-    /* 个人信息：与仓库卡片一致，本地数据优先立即渲染，GitHub API 成功时后台覆盖更新 */
+    /* 个人信息：本地数据直接渲染，签名（bio）作为个人签名展示 */
     function renderProfile(p) {
       document.getElementById("profile-name").textContent = p.name;
       document.getElementById("profile-bio").textContent = p.bio || "";
       var meta = [];
-      if (p.company) meta.push(ICON_ORG + " " + p.company);
       if (p.location) meta.push(ICON_LOCATION + " " + p.location);
-      if (p.public_repos) meta.push(ICON_REPO + " " + p.public_repos + " repos");
-      if (p.followers) meta.push(ICON_PEOPLE + " " + p.followers + " followers");
       document.getElementById("profile-meta").innerHTML =
         meta.map(function (t) { return "<span>" + t + "</span>"; }).join("");
     }
     fetchLocalProfile().then(function (p) {
       renderProfile(p);
-      fetchGitHubProfile().then(function (updated) {
-        if (updated) renderProfile(updated);
-      });
     });
 
     /* 精选文章：从 /article/star.json 加载，每行 2 个 */

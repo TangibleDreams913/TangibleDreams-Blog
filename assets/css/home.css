@@ -11,19 +11,6 @@
   flex-wrap: wrap;
 }
 
-/* 小标签样式 */
-.handle-tag {
-  font-size: 14px;
-  font-weight: 400;
-  color: #8e9aaf;
-  background: #f0f2f5;
-  padding: 2px 12px 3px 12px;
-  border-radius: 30px;
-  white-space: nowrap;
-  line-height: 1.6;
-  user-select: none;
-}
-
 /* ---------- 首页：个人信息 ---------- */
 .profile-card {
   display: flex;
@@ -76,11 +63,5 @@
 
   .profile-name-wrapper h1 {
     font-size: 20px;
-  }
-
-  .handle-tag {
-    font-size: 14px;
-    padding: 2px 12px 3px 12px;
-    margin-top: -8px;
   }
 }
