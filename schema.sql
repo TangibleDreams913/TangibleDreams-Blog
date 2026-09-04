@@ -1,11 +1,11 @@
 -- ============================================================
 -- schema.sql - 留言板数据库初始化（Cloudflare D1 / SQLite）
 -- 用法：
---   本地：  wrangler d1 execute td-guestbook --local  --file=./schema.sql
---   远程：  wrangler d1 execute td-guestbook --remote --file=./schema.sql
+--   本地：  wrangler d1 execute tangibledreams-guestbook --local  --file=./schema.sql
+--   远程：  wrangler d1 execute tangibledreams-guestbook --remote --file=./schema.sql
 -- 重置（清空所有留言后重建）：
---   wrangler d1 execute td-guestbook --remote --command="DROP TABLE IF EXISTS messages"
---   wrangler d1 execute td-guestbook --remote --file=./schema.sql
+--   wrangler d1 execute tangibledreams-guestbook --remote --command="DROP TABLE IF EXISTS messages"
+--   wrangler d1 execute tangibledreams-guestbook --remote --file=./schema.sql
 -- ============================================================
 
 -- 留言表
