@@ -1,6 +1,7 @@
 # TangibleDreams-Blog
 
 特别感谢[Xander Xiao](https://github.com/ckckh2023/)的[Xiao-Blog](https://github.com/ckckh2023/Xiao-Blog)的项目源代码！本项目大量使用了此项目的源代码和架构逻辑。
+
 个人博客站点，部署于 Cloudflare Pages。零构建即可运行，图片缩略图通过可选构建脚本自动生成。
 
 在线访问：<https://tangibledreams.top>
