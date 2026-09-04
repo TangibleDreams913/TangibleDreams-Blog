@@ -1,10 +1,10 @@
 # TangibleDreams-Blog
 
-特别感谢[Xander Xiao](https://github.com/ckckh2023/)的[Xiao-Blog](https://github.com/ckckh2023/Xiao-Blog)的项目源代码！本项目大量使用了此项目的源代码和架构逻辑。
-
 个人博客站点，部署于 Cloudflare Pages。零构建即可运行，图片缩略图通过可选构建脚本自动生成。
 
 在线访问：<https://tangibledreams.top>
+
+特别感谢[Xander Xiao](https://github.com/ckckh2023/)的[Xiao-Blog](https://github.com/ckckh2023/Xiao-Blog)的项目源代码！本项目大量使用了此项目的源代码和架构逻辑。
 
 ## 功能特性
 
@@ -84,7 +84,7 @@ curl -H "Accept: text/markdown" "https://tangibledreams.top/article/reader.html?
 
 - 携带 `Accept: text/markdown` → 返回 `Content-Type: text/markdown`，并带 `x-markdown-tokens`（近似 token 数）和 `content-signal` 头。
 - 未携带该头（浏览器默认）→ 仍返回普通 HTML。
-- 列表/阅读类页面直接由 JSON / TXT 数据源生成 Markdown，而非对 HTML 做反向转换，因此天然是「去格式化」的纯文本，token 更省。
+- 列表/阅读类页面直接由 JSON / TXT 数据源生成 Markdown，而非对 HTML 做反向转换，因此天然是「去格式化」的纯文本，更加节省Token。
 - 非页面资源（`/assets`、`/api`、`/rss.xml`、`/sitemap.xml` 及图片等二进制）不参与 Markdown 协商，保持原样。
 - 若目标域名接入 Cloudflare 原生「Markdown for Agents（Zone 级）」，本模块可作为应用侧兜底，两者可共存。
 
@@ -139,7 +139,7 @@ wrangler d1 execute td-guestbook --remote --file=./schema.sql
 
 ### 图片
 
-1. 将 PNG 原图放入 `images/photos/`；
+1. 将 PNG/JPG 等格式的原图放入 `images/photos/`；
 2. 运行 `npm run build` 自动在 `images/thumbs/` 生成同名 `.webp` 缩略图；
 3. 在 `images/ImageList.json` 中登记：
 
@@ -158,7 +158,7 @@ wrangler d1 execute td-guestbook --remote --file=./schema.sql
 
 ### 音乐
 
-1. 将 WAV 文件放入 `music/songs/`；
+1. 将 WAV/MP3 等格式的音频文件放入 `music/songs/`；
 2. 在 `music/MusicList.json` 中登记：
 
    ```json
@@ -175,4 +175,16 @@ wrangler d1 execute td-guestbook --remote --file=./schema.sql
 
 ## 致谢
 
-Powered by Cloudflare Pages · Edge Runtime · D1 · sharp
+本博客的构建与运行，离不开一系列优秀技术与服务的支撑，在此谨致以诚挚谢意。
+
+首先，感谢 **Cloudflare Pages** 提供的边缘计算平台与持续部署能力，让代码能够以极低的延迟分发至全球各地，并为站点提供了可靠的托管环境与自动化构建流程。
+
+感谢 **Edge Runtime** 带来的轻量级、高性能的边缘函数执行环境，使得动态逻辑得以在靠近用户的位置高效处理，显著提升了响应速度与用户体验。
+
+感谢 **D1** 作为强大的全球分布式 SQLite 数据库，以简洁的接口和优异的读写性能，为站点的数据持久化提供了坚实后盾，同时保持了极低的运维成本。
+
+感谢 **sharp** 这一高性能图像处理库，让图片的实时缩放、格式转换与优化变得高效而优雅，极大改善了多媒体内容的加载表现。
+
+最后，特别感谢 **Xander Xiao** 及其开源的 **Xiao-Blog** 项目。本站在设计思路、技术选型与实现细节上深受其启发，Xiao-Blog 的简洁美学与工程实践为本站的诞生提供了宝贵的参照与起点。
+
+每一行代码、每一次请求，都凝聚着这些技术背后的智慧与心血。再次感谢所有开源贡献者与平台维护者，正是你们的付出，让创造与分享变得如此简单。
