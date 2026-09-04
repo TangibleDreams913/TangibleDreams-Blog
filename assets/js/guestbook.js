@@ -1,6 +1,6 @@
 /* ============================================================
    guestbook.js - 留言板专属逻辑
-   后端：Cloudflare Pages Functions + D1（td-guestbook）
+   后端：Cloudflare Pages Functions + D1（tangibledreams-guestbook）
    功能：发布表单（昵称 + 可选 QQ 号获取头像 + Markdown 内容）、留言墙卡片渲染、搜索、刷新、预览、本地缓存
    依赖：common.js（Utils / showNotice / mountSearchBox）+ gb-card.js（GBCard）+ marked + DOMPurify
    加载页面：/guestbook/index.html
