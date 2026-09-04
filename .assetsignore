@@ -1,0 +1,13 @@
+# Files/folders to keep OUT of the Cloudflare Pages deployment.
+# These are build/config/tooling files that don't belong on the public site.
+/node_modules
+/.git
+/.wrangler
+/.gitignore
+/README.md
+/LICENSE
+/wrangler.toml
+/schema.sql
+/package.json
+/package-lock.json
+/scripts
