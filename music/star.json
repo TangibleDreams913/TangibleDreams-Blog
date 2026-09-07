@@ -1,16 +1,9 @@
 [
     {
-        "id":"74n91813Dr34m5",
-        "title": "74n91813Dr34m5",
-        "artist": "TangibleDreams",
-        "description": "Suno 4.5 All生成，本人没有所有权，请勿随意使用",
-        "src": "songs/74n91813Dr34m5.mp3"
-    },
-    {
-        "id":"New Data World",
-        "title": "New Data World",
-        "artist": "TangibleDreams",
-        "description": "Ace Step 1.5生成，可自由用于任何用途",
-        "src": "songs/New Data World.wav"
+        "id": "example-song",
+        "title": "歌曲标题示例",
+        "artist": "示例艺人",
+        "description": "这里是首页精选音乐示例，请替换为实际内容。",
+        "src": "songs/example.wav"
     }
 ]
