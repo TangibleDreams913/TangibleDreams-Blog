@@ -295,8 +295,8 @@ async function renderAbout(env) {
   md += "\n";
 
   md += section("联系方式") + "\n";
-  md += "- GitHub：[TangibleDreams913](https://github.com/TangibleDreams913)\n";
-  md += "- Bilibili：[Bilibili 主页](https://space.bilibili.com/1452367100)\n\n";
+  md += "- GitHub：[YOUR_GITHUB_USERNAME](https://github.com/YOUR_GITHUB_USERNAME)\n";
+  md += "- Bilibili：[Bilibili 主页](YOUR_BILIBILI_URL)\n\n";
 
   md += section("隐私政策") + "\n";
   md += "- 不存储敏感信息；QQ 号仅用于生成头像，不落库。\n";

@@ -10,13 +10,13 @@
 
   /* ---------- 全局常量 ---------- */
   var SITE_NAME = "TangibleDreams";
-  var GITHUB_USER = "TangibleDreams913";
+  var GITHUB_USER = "YOUR_GITHUB_USERNAME";
   var GITHUB_AVATAR = "/assets/icons/head.png";
   var GITHUB_HOME = "https://github.com/" + GITHUB_USER;
   var GITHUB_API = "https://api.github.com/users/" + GITHUB_USER;
-  var BILIBILI_HOME = "https://space.bilibili.com/1452367100";
-  var PIXIV_HOME = "https://www.pixiv.net/users/63656704";
-  var STEAM_PROFILE = "https://steamcommunity.com/id/TangibleDreams203295769/"
+  var BILIBILI_HOME = "YOUR_BILIBILI_URL";
+  var PIXIV_HOME = "YOUR_PIXIV_URL";
+  var STEAM_PROFILE = "YOUR_STEAM_URL"
 
   /* 根路径（用户页站点部署在域名根目录） */
   function root() { return "/"; }
