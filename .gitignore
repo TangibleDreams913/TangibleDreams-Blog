@@ -4,3 +4,8 @@
 /.vscode
 /sh
 /node_modules
+
+# 媒体文件：图片与音乐（不纳入版本控制）
+/images/photos/
+/images/thumbs/
+/music/songs/
