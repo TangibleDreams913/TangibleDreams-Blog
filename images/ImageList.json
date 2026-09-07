@@ -1,5 +1,13 @@
 [
     {
+        "id": "TD3",
+        "title": "TangibleDreams 4",
+        "description": "生成模型anima-aesthetic-v1.1，可下载原图拖拽至ComfyUI查看工作流。角色TangibleDreams使用CC BY-NC 4.0(https://creativecommons.org/licenses/by-nc/4.0/)进行共享，你可以在非商用且署名的情况下自由使用该角色。",
+        "src": "photos/oc_3.png",
+        "thumb": "thumbs/oc_3.webp",
+        "date": "2026-09-07"
+    },
+    {
         "id": "iroha natsume 0",
         "title": "枣伊吕波 1",
         "description": "生成模型Animagine-xl-4.0，可下载原图拖拽至ComfyUI查看工作流。",
