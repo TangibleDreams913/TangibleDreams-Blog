@@ -124,22 +124,24 @@ img { max-width: 100%; display: block; }
   content: "";
   position: absolute;
   left: 14px;
-  right: 14px;
   bottom: 4px;
+  width: 0;
   height: 2px;
   background: var(--active-border);
   border-radius: 2px;
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 0.25s ease;
+  transition: width 0.25s ease;
 }
 .site-nav .nav-item:hover { color: var(--text); }
-.site-nav .nav-item:hover::after { transform: scaleX(1); }
+.site-nav .nav-item:hover::after { width: calc(100% - 28px); }
 .site-nav .nav-item.active {
   color: var(--text);
   font-weight: 700;
 }
-.site-nav .nav-item.active::after { transform: scaleX(1); }
+.site-nav .nav-item.active::after { width: calc(100% - 28px); }
+
+@media (max-resolution: 1dppx) {
+  .site-nav .nav-item::after { height: 3px; }
+}
 
 .site-nav .nav-spacer { flex: 1; }
 
