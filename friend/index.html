@@ -55,6 +55,7 @@
 
     function matchFriend(it, q) {
       if (!q) return true;
+      q = String(q).toLowerCase(); /* 统一小写：输入大写关键词同样能匹配 */
       var fields = [it.id, it.bio];
       for (var i = 0; i < fields.length; i++) {
         if (fields[i] && String(fields[i]).toLowerCase().indexOf(q) !== -1) return true;

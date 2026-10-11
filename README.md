@@ -11,7 +11,7 @@
 - **首页**：聚合博主信息、精选文章 / 精选图片 / 精选音乐 / 精选留言
 - **文章**：TXT 静态文件 + JSON 清单，支持列表搜索、在线阅读、字号调节、下载
 - **图片**：PNG 静态文件 + JSON 清单，构建脚本自动生成 WebP 缩略图，点击图片灯箱预览
-- **音乐**：WAV 静态文件 + JSON 清单，HTML5 在线播放 + 下载
+- **音乐**：WAV / MP3 静态文件 + JSON 清单，自定义播放器（播放/暂停、可拖动进度条、时间显示、音量记忆、失败提示）+ 下载
 - **留言板**：Cloudflare D1 持久化，Markdown 内容，IP 加盐哈希 + 频率限制
 - **好友页**：好友列表（数据来自 FriendList.json）
 - **关于页**：站点统计、联系方式、隐私政策
@@ -72,7 +72,7 @@
 ├── about/                      # 关于页
 ├── assets/
 │   ├── css/                    # 各页面样式
-│   ├── js/                     # 各页面脚本（含 theme-init.js、gb-card.js）
+│   ├── js/                     # 各页面脚本（含 theme-init.js、gb-card.js、music-player.js）
 │   ├── icons/                  # 图标（head.png、ckckh2023.jpg）
 │   └── vendor/                 # 第三方库（marked.min.js）
 └── functions/
@@ -194,6 +194,9 @@ wrangler d1 execute tangibledreams-guestbook --remote --file=./schema.sql
    ```
 
 3. 如需首页展示，同步加入 `music/star.json`。
+
+播放器为站点自带的自定义播放器（`assets/js/music-player.js` + `assets/css/music.css`），
+在卡片渲染时自动挂载，JSON 中无需额外字段；音量与静音为全站共享偏好，保存在浏览器 localStorage。
 
 ## 致谢
 

@@ -1,8 +1,10 @@
 /* ============================================================
    music.js - 音乐栏目共享逻辑
    功能：音乐清单加载、音乐卡片渲染
-   依赖：common.js（Utils / root）
+   依赖：common.js（Utils / root）+ music-player.js（自定义播放器，可选）
    加载页面：/index.html（精选音乐）、/music/index.html（音乐列表）
+   说明：卡片内的播放器由 music-player.js 渲染（替换原生 <audio controls>）；
+         该模块未加载时自动回退原生播放器，两者互不依赖。
    ============================================================ */
 
 (function (global) {
@@ -40,6 +42,22 @@
     return root() + "music/" + path;
   }
 
+  /* ---------- 播放器（与播放器实现解耦） ----------
+     优先交给 music-player.js 渲染自定义播放器；
+     模块缺失时回退原生 <audio controls>，页面功能不依赖脚本加载顺序。 */
+  function playerHTML(item, src, title) {
+    if (global.MusicPlayer && global.MusicPlayer.playerHTML) {
+      return global.MusicPlayer.playerHTML({
+        id: item.id,
+        title: title,
+        artist: item.artist,
+        src: src
+      });
+    }
+    return '<audio class="mc-audio" controls preload="none" src="' +
+      utils.escapeHTML(src) + '"></audio>';
+  }
+
   /* ---------- 音乐卡片渲染（纯 DOM） ----------
      item: { id, title?, artist?, description?, src } */
   function musicCardHTML(item) {
@@ -64,7 +82,7 @@
       '<div class="mc-title">' + utils.escapeHTML(title) + '</div>' +
       metaHTML +
       '<div class="mc-desc">' + utils.escapeHTML(item.description || "暂无简介") + '</div>' +
-      '<audio class="mc-audio" controls preload="none" src="' + utils.escapeHTML(src) + '"></audio>' +
+      playerHTML(item, src, title) +
       '<div class="mc-actions">' +
         '<a class="btn" href="' + utils.escapeHTML(src) + '" download>' + utils.escapeHTML(downloadLabel) + '</a>' +
       '</div>' +
@@ -80,8 +98,12 @@
       return;
     }
     var cls = "project-grid project-grid-" + (perRow || 2);
+    /* 重渲染（如搜索过滤）前先卸载旧播放器，避免旧音频脱离文档后仍在播放 */
+    if (global.MusicPlayer && global.MusicPlayer.teardown) global.MusicPlayer.teardown(box);
     box.innerHTML = '<div class="' + cls + '">' +
       items.map(musicCardHTML).join("") + "</div>";
+    /* 渲染完成后为卡片内的自定义播放器绑定事件（幂等，搜索重渲染可重复调用） */
+    if (global.MusicPlayer && global.MusicPlayer.setup) global.MusicPlayer.setup(box);
   }
   global.mountMusicList = mountMusicList;
 })(window);

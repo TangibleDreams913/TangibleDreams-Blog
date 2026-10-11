@@ -46,6 +46,8 @@
   </footer>
 
   <script src="/assets/js/common.js"></script>
+  <!-- 自定义音乐播放器（替换原生 <audio controls>；缺失时 music.js 自动回退原生） -->
+  <script src="/assets/js/music-player.js"></script>
   <script src="/assets/js/music.js"></script>
   <script>
     /* 全部音乐：从 /music/MusicList.json 加载；搜索对标题 / 艺术家 / 简介实时过滤 */
@@ -53,6 +55,7 @@
 
     function matchMusic(it, q) {
       if (!q) return true;
+      q = String(q).toLowerCase(); /* 统一小写：输入大写关键词同样能匹配 */
       var fields = [it.title, it.artist, it.description, it.id];
       for (var i = 0; i < fields.length; i++) {
         if (fields[i] && String(fields[i]).toLowerCase().indexOf(q) !== -1) return true;

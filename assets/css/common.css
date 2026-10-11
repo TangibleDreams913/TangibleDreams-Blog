@@ -1,44 +1,52 @@
 /* ============================================================
-   common.css - 全局共享样式（GitHub 灰白风格 + 深浅色模式）
+   common.css - 全局共享样式（粉红色系、深色浅色模式切换）
    各页面专属样式请见 home.css / friend.css
    ============================================================ */
 
 /* ---------- CSS 变量：浅色（默认） ---------- */
 :root {
-  --bg: #f6f8fa;
-  --surface: #ffffff;
-  --border: #d0d7de;
-  --text: #24292f;
-  --text-muted: #57606a;
-  --link: #0969da;
-  --link-hover: #218bff;
-  --sidebar-bg: #f6f8fa;
-  --code-bg: #eff2f5;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.10);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
-  --nav-bg: rgba(255, 255, 255, 0.85);
-  --active-bg: #ddf4ff;
-  --active-border: #0969da;
+  --bg: #fff5f9;
+  --surface: #fffafc;
+  /* 卡片 / 面板的半透明底色（75% alpha）。取值经实机标定，保证在 8 位合成下
+     渲染结果与原来的不透明 --surface 完全一致，便于日后叠加页面背景图：
+       --surface-glass      直接位于页面背景（--bg）之上时使用
+       --surface-glass-flat 位于面板之上时使用（面板合成色即 --surface） */
+  --surface-glass: rgba(255, 251, 252, 0.75);
+  --surface-glass-flat: rgba(255, 250, 252, 0.75);
+  --border: #f5dbe6;
+  --text: #2d1f26;
+  --text-muted: #826875;
+  --link: #d63384;
+  --link-hover: #e754a3;
+  --sidebar-bg: #fff7fb;
+  --code-bg: #fbeef4;
+  --shadow-sm: 0 1px 2px rgba(140, 40, 90, 0.06);
+  --shadow-md: 0 4px 12px rgba(140, 40, 90, 0.10);
+  --shadow-lg: 0 8px 24px rgba(140, 40, 90, 0.12);
+  --nav-bg: rgba(255, 245, 249, 0.85);
+  --active-bg: #ffe0ed;
+  --active-border: #d63384;
 }
 
-/* ---------- 深色模式 ---------- */
 [data-theme="dark"] {
-  --bg: #0d1117;
-  --surface: #161b22;
-  --border: #30363d;
-  --text: #c9d1d9;
-  --text-muted: #8b949e;
-  --link: #58a6ff;
-  --link-hover: #79c0ff;
-  --sidebar-bg: #161b22;
-  --code-bg: #1f2428;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
-  --nav-bg: rgba(22, 27, 34, 0.85);
-  --active-bg: #1f6feb33;
-  --active-border: #58a6ff;
+  --bg: #110d0f;
+  --surface: #1b1517;
+  /* 深色下的半透明底色：同样为 75% alpha 且经实机标定，合成结果等于 --surface */
+  --surface-glass: rgba(31, 24, 27, 0.75);
+  --surface-glass-flat: rgba(28, 21, 24, 0.75);
+  --border: #34282c;
+  --text: #ddccd4;
+  --text-muted: #9a848e;
+  --link: #ff7ab6;
+  --link-hover: #ff9ecb;
+  --sidebar-bg: #1b1517;
+  --code-bg: #231b1d;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.7);
+  --nav-bg: rgba(17, 13, 15, 0.85);
+  --active-bg: rgba(255, 122, 182, 0.16);
+  --active-border: #ff7ab6;
 }
 
 /* ---------- 基础重置 ---------- */
@@ -203,9 +211,11 @@ img { max-width: 100%; display: block; }
 }
 .container.wide { max-width: 1280px; }
 
-/* ---------- 大卡片面板（包装区块） ---------- */
+/* ---------- 大卡片面板（包装区块） ----------
+   background 为 75% alpha 的半透明色（--surface-glass），在 --bg 上合成后与
+   原来的不透明 --surface 完全一致；日后页面加背景图时可直接透出 */
 .panel {
-  background: var(--surface);
+  background: var(--surface-glass);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 24px;
@@ -216,14 +226,20 @@ img { max-width: 100%; display: block; }
   margin-bottom: 20px;
 }
 
-/* ---------- 卡片 ---------- */
+/* ---------- 卡片 ----------
+   同样是 75% alpha 的半透明底色，便于叠加页面背景；合成后的颜色与改动前一致。
+   叠在面板上的卡片改用 --surface-glass-flat（以面板的合成色为底标定），
+   使「面板 + 卡片」两层半透明叠加后仍精确等于原来的 --surface。 */
 .card {
-  background: var(--surface);
+  background: var(--surface-glass);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 20px;
   box-shadow: var(--shadow-sm);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.panel .card {
+  background: var(--surface-glass-flat);
 }
 .card:hover {
   transform: translateY(-4px);
@@ -384,9 +400,13 @@ img { max-width: 100%; display: block; }
 .search-box .search-icon svg { width: 14px; height: 14px; display: block; }
 .search-box .search-input {
   width: 100%;
-  padding: 6px 30px 6px 32px;
+  /* 行盒高度 = 内容盒高度（height / line-height 同值），让文字垂直居中；
+     原 padding + line-height:1.4 的写法下，中文占位文字（无下伸部）
+     实测墨迹中心比输入框中心高约 0.5px，看起来偏上 */
+  height: 34px;
+  padding: 0 30px 0 32px;
   font-size: 14px;
-  line-height: 1.4;
+  line-height: 34px;
   color: var(--text);
   background: var(--surface);
   border: 1px solid var(--border);

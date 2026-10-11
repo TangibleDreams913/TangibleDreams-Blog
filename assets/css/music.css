@@ -1,6 +1,7 @@
 /* ============================================================
-   music.css - 音乐栏目样式
+   music.css - 音乐栏目样式（卡片 + 自定义播放器）
    加载页面：/index.html（精选音乐）、/music/index.html（音乐列表）
+   播放器控件样式对应 assets/js/music-player.js（.music-player / .mp-*）
    ============================================================ */
 
 /* ---------- 音乐卡片 ---------- */
@@ -33,6 +34,7 @@
   margin-bottom: 14px;
   min-height: 44px;
 }
+/* 原生播放器兜底样式：仅在 music-player.js 未加载时使用（自绘播放器见下方 .music-player） */
 .music-card .mc-audio {
   width: 100%;
   margin-bottom: 14px;
@@ -42,4 +44,164 @@
   justify-content: flex-end;
   margin-top: auto;
   padding-top: 6px;
+}
+
+/* ============================================================
+   自定义音乐播放器（music-player.js）
+   替换原生 <audio controls>：播放/暂停、可拖动进度条、时间、音量记忆
+   颜色全部取自 common.css 的 CSS 变量，明暗主题自动适配
+   ============================================================ */
+.music-player {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--code-bg);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.music-player:hover { border-color: var(--link); }
+.music-player.is-playing { box-shadow: var(--shadow-sm); }
+
+/* 原生控件隐藏：只作为解码 / 播放引擎 */
+.music-player .mp-audio { display: none; }
+
+.music-player .mp-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ---------- 播放 / 暂停按钮 ---------- */
+.music-player .mp-play {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--link);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.15s ease;
+}
+.music-player .mp-play:hover { background: var(--link-hover); transform: scale(1.06); }
+.music-player .mp-play:active { transform: scale(0.96); }
+/* 图标取 16px（34px 圆钮时左右各 9px，落在整数像素上）：
+   若用 15px，(34-15)/2 = 9.5px 的半个像素会让图标在 1x 屏上被栅格化成偏右 0.5px */
+.music-player .mp-play svg { width: 16px; height: 16px; display: block; }
+.music-player .mp-icon { display: block; }
+.music-player .mp-icon-pause { display: none; }
+.music-player.is-playing .mp-icon-play { display: none; }
+.music-player.is-playing .mp-icon-pause { display: block; }
+.music-player.is-loading .mp-play { opacity: 0.65; cursor: progress; }
+
+/* ---------- 进度条 / 音量条（原生 range，染色由 --mp-played 控制） ---------- */
+.music-player .mp-seek,
+.music-player .mp-vol {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  background: linear-gradient(to right,
+    var(--link) 0 var(--mp-played, 0%),
+    var(--border) var(--mp-played, 0%) 100%);
+  transition: background 0.1s linear;
+}
+.music-player .mp-seek { flex: 1; min-width: 0; }
+.music-player .mp-vol { width: 68px; flex-shrink: 0; }
+/* 时长未知（尚未开始加载）时进度条禁用，视觉上给出提示 */
+.music-player .mp-seek:disabled { opacity: 0.55; cursor: default; }
+
+.music-player .mp-seek::-webkit-slider-thumb,
+.music-player .mp-vol::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--link);
+  border: 2px solid var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease;
+}
+.music-player .mp-seek:hover::-webkit-slider-thumb,
+.music-player .mp-vol:hover::-webkit-slider-thumb { transform: scale(1.15); }
+.music-player .mp-seek::-moz-range-thumb,
+.music-player .mp-vol::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--link);
+  border: 2px solid var(--surface);
+}
+.music-player .mp-seek::-moz-range-track { background: transparent; }
+.music-player .mp-seek:focus-visible,
+.music-player .mp-vol:focus-visible,
+.music-player .mp-play:focus-visible,
+.music-player .mp-mute:focus-visible {
+  box-shadow: 0 0 0 3px var(--active-bg);
+}
+
+/* ---------- 时间 / 状态提示 ---------- */
+.music-player .mp-time {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.music-player .mp-time .mp-dur::before { content: " / "; }
+.music-player .mp-state {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.music-player.is-error .mp-state { color: var(--link); }
+.music-player.is-error .mp-seek { opacity: 0.6; }
+
+/* ---------- 音量 / 静音 ---------- */
+.music-player .mp-volume {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.music-player .mp-mute {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.music-player .mp-mute:hover { color: var(--link); background: var(--active-bg); }
+.music-player .mp-mute svg { width: 16px; height: 16px; display: block; }
+.music-player .mp-icon-muted { display: none; }
+.music-player.is-muted .mp-mute { color: var(--link); }
+.music-player.is-muted .mp-mute .mp-icon-volume { display: none; }
+.music-player.is-muted .mp-mute .mp-icon-muted { display: block; }
+
+/* ---------- 窄屏：收起音量条，避免控件挤压 ---------- */
+@media (max-width: 480px) {
+  .music-player .mp-vol { display: none; }
 }
