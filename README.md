@@ -1,6 +1,6 @@
 # TangibleDreams-Blog
 
-个人博客站点，部署于 Cloudflare Pages。零构建即可运行，图片缩略图通过可选构建脚本自动生成。
+个人博客站点，部署于 Cloudflare Pages。零构建即可运行，构建脚本用于生成图片缩略图，并把 WAV / FLAC 等音频转成 MP3（见「音乐」一节）。
 
 在线访问：<https://tangibledreams.top>
 
@@ -11,7 +11,7 @@
 - **首页**：聚合博主信息、精选文章 / 精选图片 / 精选音乐 / 精选留言
 - **文章**：TXT 静态文件 + JSON 清单，支持列表搜索、在线阅读、字号调节、下载
 - **图片**：PNG 静态文件 + JSON 清单，构建脚本自动生成 WebP 缩略图，点击图片灯箱预览
-- **音乐**：WAV / MP3 静态文件 + JSON 清单，自定义播放器（播放/暂停、可拖动进度条、时间显示、音量记忆、失败提示）+ 下载
+- **音乐**：WAV / MP3 静态文件 + JSON 清单，构建脚本自动把 WAV / FLAC 等转成 MP3 **用于在线播放**（体积小、缓冲快，进度条拖动顺畅），**下载按钮仍给原始无损文件**；自定义播放器（播放/暂停、可拖动进度条、时间显示、音量记忆、失败提示）+ 下载
 - **留言板**：Cloudflare D1 持久化，Markdown 内容，IP 加盐哈希 + 频率限制
 - **好友页**：好友列表（数据来自 FriendList.json）
 - **关于页**：站点统计、联系方式、隐私政策
@@ -29,6 +29,7 @@
 | 后端 | Cloudflare Pages Functions |
 | 数据库 | Cloudflare D1 SQLite |
 | 缩略图 | Node.js + sharp（仅构建时） |
+| 音频转码 | ffmpeg + libmp3lame（仅构建时） |
 | 部署 | Cloudflare Pages + wrangler CLI |
 
 ## 目录结构
@@ -40,13 +41,14 @@
 ├── README.md                   # 项目说明（本文件）
 ├── .gitignore
 ├── .assetsignore               # Cloudflare Pages 部署时忽略的文件
-├── package.json                # 构建脚本（图片缩略图）
+├── package.json                # 构建脚本（图片缩略图 + 音频转码）
 ├── package-lock.json
 ├── robots.txt
 ├── schema.sql                  # 留言板建表 SQL
 ├── wrangler.toml               # Cloudflare Pages 配置（D1 绑定）
 ├── scripts/
-│   └── generate-thumbnails.mjs # 生成图片 WebP 缩略图
+│   ├── generate-thumbnails.mjs # 生成图片 WebP 缩略图
+│   └── convert-audio.mjs       # WAV / FLAC 等 → MP3，并改写音乐清单
 ├── article/
 │   ├── index.html              # 文章列表
 │   ├── reader.html             # 文章在线阅读页
@@ -114,7 +116,7 @@ curl -H "Accept: text/markdown" "https://tangibledreams.top/article/reader.html?
 
 ```bash
 npm install          # 安装 sharp（首次）
-npm run build        # 生成图片缩略图（无图片时会跳过）
+npm run build        # 生成图片缩略图 + 把 wav/flac 等音频转成 mp3（无内容时会跳过）
 wrangler pages dev .
 ```
 
@@ -181,7 +183,7 @@ wrangler d1 execute tangibledreams-guestbook --remote --file=./schema.sql
 ### 音乐
 
 1. 将 WAV/MP3 等格式的音频文件放入 `music/songs/`；
-2. 在 `music/MusicList.json` 中登记：
+2. 在 `music/MusicList.json` 中登记（WAV / FLAC 等**直接写原始文件**即可）：
 
    ```json
    {
@@ -193,10 +195,31 @@ wrangler d1 execute tangibledreams-guestbook --remote --file=./schema.sql
    }
    ```
 
-3. 如需首页展示，同步加入 `music/star.json`。
+3. 运行 `npm run build`：脚本会调 ffmpeg 在**同目录**转出 `songs/my-song.mp3`，
+   并把清单改写为「播放用 mp3、下载用原始文件」：
+
+   ```json
+   {
+     "src": "songs/my-song.mp3",
+     "download": "songs/my-song.wav"
+   }
+   ```
+
+4. 如需首页展示，同步加入 `music/star.json`（同样会被脚本改写）。
+
+为什么这样分工：浏览器只有在服务器支持按字节分段请求（`206` / `Accept-Ranges`）时
+才能对未压缩音频做跳转。Cloudflare Pages 对音频常常直接返回 `200`，此时 WAV 无法跳转 ——
+拖动进度条会丢掉缓冲区、从头重新播放。MP3 体积小，很快就能整段缓冲完，进度条拖动正常，
+所以「在线听 mp3、要原文件就下载 wav」是更稳的组合。
+
+- 增量执行：mp3 比源文件新就跳过；`node scripts/convert-audio.mjs --force` 可强制重转。
+- 转换参数在 `scripts/convert-audio.mjs` 的 `MP3_ARGS`（默认 VBR `-q:a 2` ≈ 190kbps）。
+- 需要 ffmpeg：`winget install Gyan.FFmpeg`，或用环境变量 `FFMPEG_PATH` 指定；
+  找不到时只告警、不中断构建（此时清单不会被改写，站点仍播放原始文件）。
 
 播放器为站点自带的自定义播放器（`assets/js/music-player.js` + `assets/css/music.css`），
-在卡片渲染时自动挂载，JSON 中无需额外字段；音量与静音为全站共享偏好，保存在浏览器 localStorage。
+在卡片渲染时自动挂载；`download` 字段只影响下载按钮的链接与文案。
+音量与静音为全站共享偏好，保存在浏览器 localStorage。
 
 ## 致谢
 

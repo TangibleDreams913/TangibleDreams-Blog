@@ -4,7 +4,7 @@
   "private": true,
   "description": "个人主页",
   "scripts": {
-    "build": "node scripts/generate-thumbnails.mjs",
+    "build": "node scripts/generate-thumbnails.mjs && node scripts/convert-audio.mjs",
     "deploy": "npm run build && wrangler pages deploy . --project-name=tangibledreams"
   },
   "devDependencies": {

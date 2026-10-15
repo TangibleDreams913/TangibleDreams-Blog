@@ -59,10 +59,13 @@
   }
 
   /* ---------- 音乐卡片渲染（纯 DOM） ----------
-     item: { id, title?, artist?, description?, src } */
+     item: { id, title?, artist?, description?, src, download? }
+     src      —— 在线播放用的文件（构建脚本会把 wav 等格式换成同目录 mp3）
+     download —— 下载按钮指向的原始文件（wav / flac 等，无损音质）；缺省时退回 src */
   function musicCardHTML(item) {
     var title = item.title || item.id || "未命名音乐";
     var src = musicUrl(item.src);
+    var downloadSrc = musicUrl(item.download || item.src);
     var meta = [];
     if (item.artist) meta.push(utils.escapeHTML(item.artist));
     var metaHTML = meta.length
@@ -75,7 +78,8 @@
       return parts.length > 1 ? parts.pop().toUpperCase() : '';
     }
 
-    const ext = getFileExtension(src);
+    /* 按钮文案按"下载文件"的扩展名走，例如 下载 WAV */
+    const ext = getFileExtension(downloadSrc);
     const downloadLabel = ext ? `下载 ${ext}` : '下载 音频文件';
 
     return '<article class="card music-card">' +
@@ -84,7 +88,7 @@
       '<div class="mc-desc">' + utils.escapeHTML(item.description || "暂无简介") + '</div>' +
       playerHTML(item, src, title) +
       '<div class="mc-actions">' +
-        '<a class="btn" href="' + utils.escapeHTML(src) + '" download>' + utils.escapeHTML(downloadLabel) + '</a>' +
+        '<a class="btn" href="' + utils.escapeHTML(downloadSrc) + '" download>' + utils.escapeHTML(downloadLabel) + '</a>' +
       '</div>' +
     '</article>';
   }
