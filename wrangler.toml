@@ -7,8 +7,10 @@
 #   变量名 GUESTBOOK → 数据库 tangibledreams-guestbook
 
 name = "tangibledreams"
-compatibility_date = "2024-09-01"
+compatibility_date = "2024-12-16"
 pages_build_output_dir = "."
+
+# 建议在 D1 数据库设置中启用读取复制，可以降低数据库读取延迟
 
 [[d1_databases]]
 binding = "GUESTBOOK"
