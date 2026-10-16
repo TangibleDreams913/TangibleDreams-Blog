@@ -1,22 +1,25 @@
 /* ============================================================
    common.js - 全局共享逻辑
-   功能：导航栏渲染 / 高亮、主题切换、GitHub API 基础设施、
-         公告条、工具函数、版权年份
+   功能：导航栏渲染 / 高亮、主题切换、公告条、工具函数、版权年份
    各页面专属逻辑请见 home.js / friend.js
+   本站所有内容均为站内静态数据，不从 GitHub 等外部接口拉取。
    ============================================================ */
 
 (function (global) {
   "use strict";
 
-  /* ---------- 全局常量 ---------- */
+  /* ---------- 站点外链配置（换账号只改这一块） ----------
+     本仓库是公开镜像，这里只保留 YOUR_* 占位符：
+     部署副本里是真实账号链接，同步代码时请勿把它们带进来
+     （README 的「关于本仓库」一节有说明）。 */
   var SITE_NAME = "TangibleDreams";
-  var GITHUB_USER = "YOUR_GITHUB_USERNAME";
+  /* 头像是站内本地图片，不从 GitHub 拉取 */
   var GITHUB_AVATAR = "/assets/icons/head.png";
+  var GITHUB_USER = "YOUR_GITHUB_USERNAME";
   var GITHUB_HOME = "https://github.com/" + GITHUB_USER;
-  var GITHUB_API = "https://api.github.com/users/" + GITHUB_USER;
   var BILIBILI_HOME = "YOUR_BILIBILI_URL";
   var PIXIV_HOME = "YOUR_PIXIV_URL";
-  var STEAM_PROFILE = "YOUR_STEAM_URL"
+  var STEAM_PROFILE = "YOUR_STEAM_URL";
 
   /* 根路径（用户页站点部署在域名根目录） */
   function root() { return "/"; }
@@ -56,35 +59,6 @@
   };
   var utils = new Utils();
   global.Utils = utils;
-
-  /* ---------- localStorage 缓存（GitHub API 数据） ----------
-     配合 GitHub REST API 的 ETag 条件请求（If-None-Match）：
-     数据未变化时返回 304（不计入速率限制），变化时返回 200 并更新缓存，
-     因此每次访问都能拿到最新数据，又不会耗尽 API 配额；
-     缓存仅在离线 / 限流 / 接口报错时作为兜底。 */
-  var CACHE_PREFIX = "gh_cache:";
-
-  function cacheRead(key) {
-    try {
-      var raw = localStorage.getItem(CACHE_PREFIX + key);
-      if (!raw) return undefined;
-      var obj = JSON.parse(raw);
-      return (obj && typeof obj === "object" && "d" in obj) ? obj : undefined;
-    } catch (e) { return undefined; }
-  }
-  function cacheWrite(key, entry) {
-    try {
-      localStorage.setItem(CACHE_PREFIX + key, JSON.stringify(entry));
-    } catch (e) {}
-  }
-  function cacheClear() {
-    try {
-      Object.keys(localStorage).forEach(function (k) {
-        if (k.indexOf(CACHE_PREFIX) === 0) localStorage.removeItem(k);
-      });
-    } catch (e) {}
-  }
-  global.cacheClear = cacheClear;
 
   /* ---------- 公告条（通用接口） ----------
      showNotice(message, options)：在顶栏下方弹出公告
@@ -135,66 +109,10 @@
   }
   global.showNotice = showNotice;
 
-  /* GitHub API 不可用时提醒一次；用户手动关闭后本机不再弹出（localStorage 持久化） */
-  var GH_NOTICE_KEY = "gh_notice_dismissed";
-  function ghNoticeDismissed() {
-    try { return localStorage.getItem(GH_NOTICE_KEY) === "1"; } catch (e) { return false; }
-  }
-  function dismissGhNotice() {
-    try { localStorage.setItem(GH_NOTICE_KEY, "1"); } catch (e) {}
-  }
-  var ghIssuesNoticed = false;
-  function notifyGitHubIssues() {
-    if (ghIssuesNoticed || ghNoticeDismissed()) return;
-    ghIssuesNoticed = true;
-    showNotice("GitHub API 暂时不可用或已达请求上限，部分数据可能不是最新，请稍后访问重试。", {
-      onClose: dismissGhNotice
-    });
-  }
-
-  /* 带 ETag 条件请求的 GitHub API 获取：
-     有缓存时带 If-None-Match 重新校验；304 复用缓存并刷新时间戳；
-     200 更新缓存并记录新 ETag；离线 / 限流 / 报错时回退缓存
-     extraHeaders：可选，追加到请求头（如 OAuth client 认证头，用于提高速率上限） */
-  function fetchGitHubJSON(url, key, extraHeaders) {
-    var entry = cacheRead(key);
-    var headers = {};
-    if (extraHeaders) Object.assign(headers, extraHeaders);
-    if (entry && entry.etag) headers["If-None-Match"] = entry.etag;
-    return fetch(url, { headers: headers }).then(function (r) {
-      if (r.status === 304 && entry) {
-        cacheWrite(key, { t: Date.now(), etag: entry.etag, d: entry.d });
-        return entry.d;
-      }
-      if (!r.ok) {
-        var err = new Error("HTTP " + r.status + " @ " + url);
-        err.status = r.status;
-        throw err;
-      }
-      return r.json().then(function (json) {
-        cacheWrite(key, { t: Date.now(), etag: r.headers.get("ETag") || null, d: json });
-        return json;
-      });
-    }).catch(function (err) {
-      /* 网络异常 / 服务端 5xx / 限流(403,429) → 视为 GitHub API 不可用，弹公告提醒 */
-      if (!err.status || err.status >= 500 || err.status === 403 || err.status === 429) {
-        notifyGitHubIssues();
-      }
-      if (entry) {
-        console.warn("[gh-api] 请求失败，回退缓存 " + key + "：", err);
-        return entry.d;
-      }
-      throw err;
-    });
-  }
-  global.fetchGitHubJSON = fetchGitHubJSON;
-
   /* 暴露常量给子模块（避免重复硬编码） */
   global.SITE_NAME = SITE_NAME;
-  global.GITHUB_USER = GITHUB_USER;
   global.GITHUB_AVATAR = GITHUB_AVATAR;
   global.GITHUB_HOME = GITHUB_HOME;
-  global.GITHUB_API = GITHUB_API;
   global.BILIBILI_HOME = BILIBILI_HOME;
   global.PIXIV_HOME = PIXIV_HOME;
   global.STEAM_PROFILE = STEAM_PROFILE;
@@ -221,6 +139,63 @@
     document.documentElement.setAttribute("data-theme", t);
     if (persist) setStoredTheme(t);
   }
+
+  /* 带过渡的主题切换：先淡出背景图露出目标主题的底色（--bg-transition），
+     淡出结束后才真正写 data-theme 并让新背景图淡入，避免换图时闪一下。
+     时长只从 CSS 变量 --theme-fade 读，改一处即可（0 表示直接瞬切）。
+     因为 data-theme 是延迟写入的，这里用 themeTarget 记录"待生效的目标"，
+     连点时就只更新目标、复用同一次淡出，不会出现读旧值导致的来回抖动。 */
+  var DEFAULT_FADE_MS = 40;   // 仅在读不到 --theme-fade 时兜底，与 common.css 默认值一致
+  var themeFadeTimer = null;
+  var themeTarget = null;
+  var themePersist = false;
+  function themeFadeMs() {
+    var raw = "";
+    try {
+      raw = getComputedStyle(document.documentElement)
+        .getPropertyValue("--theme-fade").trim();
+    } catch (e) { return DEFAULT_FADE_MS; }
+    var n = parseFloat(raw);
+    if (isNaN(n)) return DEFAULT_FADE_MS;
+    if (/ms$/.test(raw)) return Math.max(0, n);
+    if (/s$/.test(raw)) return Math.max(0, n * 1000);   // 写成 0.04s 也认
+    return Math.max(0, n);
+  }
+  function prefersReducedMotion() {
+    return !!(window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }
+  function cancelThemeFade() {
+    if (themeFadeTimer) { clearTimeout(themeFadeTimer); themeFadeTimer = null; }
+    document.documentElement.classList.remove("bg-fade");
+  }
+  function currentTheme() {
+    return themeTarget || document.documentElement.getAttribute("data-theme") || "light";
+  }
+  function switchTheme(t, persist) {
+    if (t !== "dark") t = "light";
+    var html = document.documentElement;
+    var wait = themeFadeMs();
+    themeTarget = t;
+    themePersist = !!persist;
+    if (prefersReducedMotion() || wait <= 0) {  // 无障碍，或 --theme-fade: 0ms：直接切
+      cancelThemeFade();
+      applyTheme(themeTarget, themePersist);
+      themeTarget = null;
+      return;
+    }
+    if (themeFadeTimer) return;            // 正在淡出：只改目标，落地时统一应用
+    html.classList.add("bg-fade");
+    themeFadeTimer = setTimeout(function () {
+      themeFadeTimer = null;
+      var target = themeTarget;
+      var persistNow = themePersist;
+      themeTarget = null;
+      applyTheme(target, persistNow);      // 先换主题（背景图此刻不可见）
+      html.classList.remove("bg-fade");    // 再淡入新背景图；底色不会跳变
+    }, wait);
+  }
+
   function registerSystemThemeListener() {
     if (registerSystemThemeListener._done) return;
     registerSystemThemeListener._done = true;
@@ -228,7 +203,7 @@
     var mql = window.matchMedia("(prefers-color-scheme: dark)");
     var onChange = function (e) {
       if (getStoredTheme()) return;
-      applyTheme(e.matches ? "dark" : "light", false);
+      switchTheme(e.matches ? "dark" : "light", false);
     };
     if (mql.addEventListener) mql.addEventListener("change", onChange);
     else if (mql.addListener) mql.addListener(onChange);
@@ -244,8 +219,7 @@
     registerSystemThemeListener();
   }
   function toggleTheme() {
-    var cur = document.documentElement.getAttribute("data-theme");
-    applyTheme(cur === "dark" ? "light" : "dark", true);
+    switchTheme(currentTheme() === "dark" ? "light" : "dark", true);
   }
   initTheme();
 
@@ -368,10 +342,14 @@
         utils.escapeHTML(it.label) + "</a>";
     }).join("");
 
+    /* 站名与头像都指向站内首页（不再外链 GitHub） */
+    var homeHref = root() + "index.html";
     return (
-      '<img class="nav-avatar" src="' + GITHUB_AVATAR + '" alt="avatar" ' +
-        'onerror="this.style.visibility=\'hidden\'">' +
-      '<a class="nav-id" href="' + GITHUB_HOME + '" target="_blank" rel="noopener">' +
+      '<a class="nav-avatar-link" href="' + homeHref + '" aria-label="' +
+        utils.escapeHTML(SITE_NAME) + ' 首页">' +
+        '<img class="nav-avatar" src="' + GITHUB_AVATAR + '" alt="avatar" ' +
+        'onerror="this.style.visibility=\'hidden\'"></a>' +
+      '<a class="nav-id" href="' + homeHref + '">' +
         SITE_NAME + "</a>" +
       '<nav class="nav-items">' + items + "</nav>" +
       '<button class="nav-more" type="button" aria-label="更多导航" aria-expanded="false">' +

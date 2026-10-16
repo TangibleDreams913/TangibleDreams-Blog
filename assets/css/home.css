@@ -65,3 +65,21 @@
     font-size: 20px;
   }
 }
+
+/* ---------- 首页：角色立绘（中等宽度档） ----------
+   这一段只写在 home.css，所以只在首页生效。
+   1500px 以上由 common.css 让立绘完整站在右侧留白里；这里补上
+   901–1499px 的表现：首页信息区下方就是"精选文章"卡片，没有留白可用，
+   于是让立绘从卡片上沿探出头部、身体留在卡片后面。
+   顶部 70px 是固定导航栏的高度，保证帽子和脸不会被导航压住。
+   ≤900px 由 common.css 的默认 display:none 保持隐藏。 */
+@media (min-width: 901px) and (max-width: 1499px) {
+  body::after {
+    display: block;
+    top: 70px;
+    bottom: auto;
+    right: 0;
+    width: auto;
+    height: calc(100vh - 70px);
+  }
+}

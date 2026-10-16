@@ -10,6 +10,10 @@
 - `music/MusicList.json`、`music/star.json`
 - `images/ImageList.json`、`images/star.json`
 - `friend/FriendList.json`
+- `assets/bg/bg-light.jpg`、`assets/bg/bg-dark.jpg`、`assets/bg/char.png`
+  （**空白占位图**：纯色 1920x1080 + 全透明 507x1201，合计约 52 KB。
+   `assets/css/common.css` 会引用这三个路径，缺了会 404，所以必须保留；
+   但真实背景与立绘属于内容与媒体，只留在部署副本里。详见 `assets/bg/README.txt`。）
 
 不要用真实站点的数据覆盖它们，也不要"顺手补齐"示例里引用的文件。
 
@@ -18,6 +22,9 @@
 `music/songs/`、`images/photos/`、`images/thumbs/`、`article/articles/`
 已在 `.gitignore` 中忽略（媒体与素材不随本仓库分发）。
 不要用 `git add -f` 之类手段绕过忽略规则。
+
+`assets/bg/` 是例外：它需要被跟踪（里面是上面那三张占位图，少了会 404），
+因此**不要**把 `/assets/bg/` 加进 `.gitignore`，也不要用真实图片替换占位图。
 
 ## 关于构建告警
 

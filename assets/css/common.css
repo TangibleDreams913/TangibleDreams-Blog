@@ -6,13 +6,24 @@
 /* ---------- CSS 变量：浅色（默认） ---------- */
 :root {
   --bg: #fff5f9;
+  /* 切换主题时先淡出成这个纯色、再淡入新背景图：浅色模式下就是深色主题的 --bg，
+     这样"亮→暗"时露出来的是暗色纯色，"暗→亮"时露出来的是浅色纯色。 */
+  --bg-transition: #110d0f;
+  /* 主题切换时背景"淡出 → 换图 → 淡入"每一段的时长。纯色只是兜底，
+     不该自己抢戏，所以默认很短；设成 0ms 就是直接瞬切。
+     改这一处即可：common.js 会读这个变量的值（见下面 body::before）。 */
+  --theme-fade: 40ms;
   --surface: #fffafc;
   /* 卡片 / 面板的半透明底色（75% alpha）。取值经实机标定，保证在 8 位合成下
-     渲染结果与原来的不透明 --surface 完全一致，便于日后叠加页面背景图：
+     渲染结果与原来的不透明 --surface 完全一致，便于叠加页面背景图：
        --surface-glass      直接位于页面背景（--bg）之上时使用
        --surface-glass-flat 位于面板之上时使用（面板合成色即 --surface） */
   --surface-glass: rgba(255, 251, 252, 0.75);
   --surface-glass-flat: rgba(255, 250, 252, 0.75);
+  /* 毛玻璃（backdrop-filter）参数：面板与卡片共用。blur 越大玻璃感越强，
+     同时 GPU 开销也越大（每张卡片都要实时模糊背后的内容）。 */
+  --glass-blur: 14px;
+  --glass-saturate: 180%;
   --border: #f5dbe6;
   --text: #2d1f26;
   --text-muted: #826875;
@@ -26,10 +37,25 @@
   --nav-bg: rgba(255, 245, 249, 0.85);
   --active-bg: #ffe0ed;
   --active-border: #d63384;
+  /* ---------- 页面背景图（本地静态图片，不使用在线图床） ----------
+     图片放在 /assets/bg/；改成 --bg-image: none 即可完全退回纯色背景
+     （不会发出任何图片请求）。
+     顶部文字（站名 / 简介 / 元信息）直接压在图上，对比度已烘焙进图片本身，
+     一般不需要 --bg-scrim；换成更亮更花的图时可以整体再压一层：
+       --bg-scrim: rgba(0, 0, 0, 0.25);
+     角色立绘见下方 body::after。 */
+  --bg-image: url("/assets/bg/bg-light.jpg");
+  --bg-scrim: transparent;
+  /* 角色立绘（裁掉透明边后的净宽高比，用于按高度自动算宽度）与贴边距离 */
+  --char-aspect: 507 / 1201;
+  --char-image: url("/assets/bg/char.png");
+  --char-edge: 16px;
 }
 
 [data-theme="dark"] {
   --bg: #110d0f;
+  /* 深色模式下切成浅色的过渡纯色 */
+  --bg-transition: #fff5f9;
   --surface: #1b1517;
   /* 深色下的半透明底色：同样为 75% alpha 且经实机标定，合成结果等于 --surface */
   --surface-glass: rgba(31, 24, 27, 0.75);
@@ -47,6 +73,8 @@
   --nav-bg: rgba(17, 13, 15, 0.85);
   --active-bg: rgba(255, 122, 182, 0.16);
   --active-border: #ff7ab6;
+  /* 深色模式的背景图：与浅色共用同一张立绘，只换背景（见 --char-image） */
+  --bg-image: url("/assets/bg/bg-dark.jpg");
 }
 
 /* ---------- 基础重置 ---------- */
@@ -56,11 +84,82 @@ html, body {
   height: 100%;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
                "Hiragino Sans GB", "Microsoft YaHei", Helvetica, Arial, sans-serif;
-  background: var(--bg);
   color: var(--text);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   transition: background 0.2s ease, color 0.2s ease;
+}
+
+/* 底色画在 html（画布）上，body 保持透明：这样下面 z-index:-1 的背景图层
+   才不会被 body 的底色盖住；主题切换的 background 过渡仍然生效。 */
+html { background: var(--bg); }
+body { background: transparent; }
+
+/* ---------- 页面背景图层 ----------
+   固定不随页面滚动，位于内容之下（z-index: -1）、html 底色之上。
+   用 fixed 伪元素而不是 body 的 background-attachment: fixed —— 后者在
+   iOS Safari 上会跟着页面滚动、滚动时重绘代价也高。
+   第一层是 --bg-scrim 遮罩（默认透明），第二层才是背景图。 */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: linear-gradient(var(--bg-scrim), var(--bg-scrim)), var(--bg-image);
+  background-position: center, center;
+  background-size: cover, cover;
+  background-repeat: no-repeat, no-repeat;
+  /* 主题切换：见下方 html.bg-fade。时长由 --theme-fade 控制（common.js 读同一个值）。
+     注意 html 自带 0.2s 的 background 过渡，比通常的 --theme-fade 长，
+     所以淡出结束时露出的并不是"纯白/纯黑"，而是两者之间的一层过渡色，
+     观感上更像一次轻微的明暗呼吸，而不是闪一下纯色。 */
+  transition: opacity var(--theme-fade) ease;
+}
+
+/* ---------- 主题切换：淡出成纯色 → 换图 → 淡入 ----------
+   common.js 的切主题流程：
+     1. 给 <html> 加 .bg-fade —— 底色开始变成"目标主题的纯色"(--bg-transition)，
+        同时背景图层 opacity 1 → 0；
+     2. --theme-fade 之后真正写 data-theme（此刻背景图不可见，换图不会闪），
+        再移除 .bg-fade，新背景图 opacity 0 → 1 淡入。
+   立绘、卡片、文字都不受影响：立绘两主题共用同一张，本来就不用换。
+   时长只有一个来源 --theme-fade，默认 40ms；设成 0ms 即直接瞬切。 */
+html.bg-fade { background: var(--bg-transition); }
+html.bg-fade body::before { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  body::before { transition: none; }
+}
+
+/* ---------- 角色立绘图层 ----------
+   与背景图层同为 z-index:-1，因此永远在正文、卡片和导航之下；
+   卡片是半透明+毛玻璃，立绘从卡片后面"探出来"是预期效果。
+   摆位分三档：
+     ≥ 1500px  站在右侧留白里（宽度随留白自适应，最大 380px），全站显示；
+     901–1499  由 home.css 接管：头部露出卡片上沿、身体被卡片遮住，只在首页；
+     ≤ 900px   手机端隐藏（屏幕太窄，立绘只会挡住内容）。
+   镜像用 scaleX(-1) 实现：立绘原图实际是略微朝向画面右侧的，
+   镜像之后才朝向页面内容一侧；不需要重新生成素材。 */
+body::after {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  display: none;
+  pointer-events: none;
+  right: var(--char-edge);
+  bottom: var(--char-edge);
+  aspect-ratio: var(--char-aspect);
+  background: var(--char-image) center bottom / contain no-repeat;
+  transform: scaleX(-1);
+}
+
+@media (min-width: 1500px) {
+  body::after {
+    display: block;
+    /* 主内容 .container 为 1100px 居中，这里把立绘限制在右侧留白内 */
+    width: min(calc((100vw - 1100px) / 2 - 20px), 380px);
+  }
 }
 
 /* ---------- 全局滚动条 ---------- */
@@ -96,6 +195,14 @@ img { max-width: 100%; display: block; }
   -webkit-backdrop-filter: saturate(180%) blur(12px);
   border-bottom: 1px solid var(--border);
 }
+
+.site-nav .nav-avatar-link {
+  display: inline-flex;
+  flex-shrink: 0;
+  border-radius: 50%;
+  transition: opacity 0.2s ease;
+}
+.site-nav .nav-avatar-link:hover { opacity: 0.85; }
 
 .site-nav .nav-avatar {
   width: 32px;
@@ -211,9 +318,22 @@ img { max-width: 100%; display: block; }
 }
 .container.wide { max-width: 1280px; }
 
+/* ---------- 毛玻璃（背板模糊）----------
+   面板与卡片共用同一组参数：blur 是"磨砂"本体，saturate 让透出的背景略鲜艳，
+   避免磨砂后发灰。参数改动只需调整 :root 里的 --glass-blur / --glass-saturate。
+   不支持 backdrop-filter 的浏览器见文件末尾的兜底规则（自动提高不透明度）。
+   注意：backdrop-filter 会让元素成为 fixed/absolute 后代的包含块，站内弹窗
+   （留言详情、图片灯箱）都挂在 document.body 上，不受影响。 */
+.panel,
+.card {
+  backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
+  -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
+}
+
 /* ---------- 大卡片面板（包装区块） ----------
    background 为 75% alpha 的半透明色（--surface-glass），在 --bg 上合成后与
-   原来的不透明 --surface 完全一致；日后页面加背景图时可直接透出 */
+   原来的不透明 --surface 完全一致；配合上面的 backdrop-filter 形成毛玻璃，
+   背景图透出时会被磨砂柔化 */
 .panel {
   background: var(--surface-glass);
   border: 1px solid var(--border);
@@ -229,7 +349,9 @@ img { max-width: 100%; display: block; }
 /* ---------- 卡片 ----------
    同样是 75% alpha 的半透明底色，便于叠加页面背景；合成后的颜色与改动前一致。
    叠在面板上的卡片改用 --surface-glass-flat（以面板的合成色为底标定），
-   使「面板 + 卡片」两层半透明叠加后仍精确等于原来的 --surface。 */
+   使「面板 + 卡片」两层半透明叠加后仍精确等于原来的 --surface。
+   卡片自带的 backdrop-filter 作用有限（面板已经先把背景糊过一遍，卡片只能糊到
+   一块均匀色），因此整站玻璃感主要由面板那一层决定。 */
 .card {
   background: var(--surface-glass);
   border: 1px solid var(--border);
@@ -508,6 +630,12 @@ img { max-width: 100%; display: block; }
 @media (max-width: 768px) {
   html { zoom: 0.85; }
 
+  /* 手机上每张卡片都要实时模糊，开销明显：窄屏把模糊量降到 8px，滚动更跟手。
+     这里只降模糊、不动 --surface-glass 的 75% 不透明度 —— 降低不透明度会削弱
+     小屏上的文字可读性，而且对性能没有帮助；若确实想要手机端更通透，
+     在下面加一行 --surface-glass / --surface-glass-flat 覆盖即可。 */
+  :root { --glass-blur: 8px; }
+
   .nav-right .github-link span {
     display: none;
   }
@@ -519,5 +647,20 @@ img { max-width: 100%; display: block; }
   .nav-right .github-link svg {
     width: 24px;
     height: 24px;
+  }
+}
+
+/* ---------- 兜底：不支持 backdrop-filter 的浏览器 ----------
+   这些浏览器磨不了砂，若继续沿用 75% 半透明，背景图会直接透出、文字（尤其
+   灰色小字）发灰难读，因此把不透明度提到 94%，卡片基本接近实色。
+   放在文件最末尾，是为了在窄屏媒体查询之后仍然生效（老浏览器多半跑在窄屏）。 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root {
+    --surface-glass: rgba(255, 251, 252, 0.94);
+    --surface-glass-flat: rgba(255, 250, 252, 0.94);
+  }
+  [data-theme="dark"] {
+    --surface-glass: rgba(31, 24, 27, 0.94);
+    --surface-glass-flat: rgba(28, 21, 24, 0.94);
   }
 }
