@@ -33,6 +33,16 @@
 因为示例数据没有对应的源文件，构建时会输出「源文件不存在，跳过」——
 这是**预期行为**，不要为了消除该告警而新增媒体文件或改写示例 JSON。
 
+## 个人信息一律用占位符
+
+本仓库里凡是出现账号 / 联系方式的地方，都是 `YOUR_*` 或 `your-email@example.com`：
+
+- `assets/js/common.js` 的「站点外链配置」块
+- `about/index.html` 的联系方式列表
+- `functions/_lib/markdown-for-agents.js` 的「联系方式」一节
+
+从部署副本同步代码时，只同步逻辑，不要把这些位置的真实账号覆盖进来。
+
 ## 欢迎的改动
 
 代码与文档：`assets/`、`functions/`、`scripts/`、`*.html`、`package.json`、
