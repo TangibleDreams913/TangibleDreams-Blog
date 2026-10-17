@@ -207,19 +207,7 @@ wrangler d1 execute tangibledreams-guestbook --remote --file=./schema.sql
 
 4. 如需首页展示，同步加入 `music/star.json`（同样会被脚本改写）。
 
-为什么这样分工：浏览器只有在服务器支持按字节分段请求（`206` / `Accept-Ranges`）时
-才能对未压缩音频做跳转。Cloudflare Pages 对音频常常直接返回 `200`，此时 WAV 无法跳转 ——
-拖动进度条会丢掉缓冲区、从头重新播放。MP3 体积小，很快就能整段缓冲完，进度条拖动正常，
-所以「在线听 mp3、要原文件就下载 wav」是更稳的组合。
-
-- 增量执行：mp3 比源文件新就跳过；`node scripts/convert-audio.mjs --force` 可强制重转。
-- 转换参数在 `scripts/convert-audio.mjs` 的 `MP3_ARGS`（默认 VBR `-q:a 2` ≈ 190kbps）。
-- 需要 ffmpeg：`winget install Gyan.FFmpeg`，或用环境变量 `FFMPEG_PATH` 指定；
-  找不到时只告警、不中断构建（此时清单不会被改写，站点仍播放原始文件）。
-
-播放器为站点自带的自定义播放器（`assets/js/music-player.js` + `assets/css/music.css`），
-在卡片渲染时自动挂载；`download` 字段只影响下载按钮的链接与文案。
-音量与静音为全站共享偏好，保存在浏览器 localStorage。
+为什么这样分工：为了更好地兼顾流播体验和高音质下载。技术上实现流播wav格式的音乐有些困难。
 
 ## 致谢
 
@@ -233,6 +221,6 @@ wrangler d1 execute tangibledreams-guestbook --remote --file=./schema.sql
 
 感谢 **sharp** 这一高性能图像处理库，让图片的实时缩放、格式转换与优化变得高效而优雅，极大改善了多媒体内容的加载表现。
 
-最后，特别感谢 **Xander Xiao** 及其开源的 **Xiao-Blog** 项目。本站在设计思路、技术选型与实现细节上深受其启发，Xiao-Blog 的简洁美学与工程实践为本站的诞生提供了宝贵的参照与起点。
+特别感谢 **Xander Xiao** 及其开源的 **Xiao-Blog** 项目。本站在设计思路、技术选型与实现细节上深受其启发，Xiao-Blog 的简洁美学与工程实践为本站的诞生提供了宝贵的参照与起点。
 
 每一行代码、每一次请求，都凝聚着这些技术背后的智慧与心血。再次感谢所有开源贡献者与平台维护者，正是你们的付出，让创造与分享变得如此简单。
