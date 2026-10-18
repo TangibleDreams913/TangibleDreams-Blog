@@ -8,10 +8,7 @@
 (function (global) {
   "use strict";
 
-  /* ---------- 站点外链配置（换账号只改这一块） ----------
-     本仓库是公开镜像，这里只保留 YOUR_* 占位符：
-     部署副本里是真实账号链接，同步代码时请勿把它们带进来
-     （README 的「关于本仓库」一节有说明）。 */
+  /* ---------- 站点外链配置（换账号只改这一块） ---------- */
   var SITE_NAME = "TangibleDreams";
   /* 头像是站内本地图片，不从 GitHub 拉取 */
   var GITHUB_AVATAR = "/assets/icons/head.png";
