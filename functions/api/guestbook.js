@@ -69,20 +69,21 @@ export async function onRequestGet(context) {
     await ensureSchema(env);
     const url = new URL(request.url);
     const idsParam = url.searchParams.get("ids");
+	const session = env.GUESTBOOK.withSession();
 
     /* 按 id 批量获取（首页精选留言） */
     if (idsParam) {
       const ids = idsParam.split(",").map(s => parseInt(s, 10)).filter(n => !isNaN(n) && n > 0);
       if (!ids.length) return json({ list: [] });
       const placeholders = ids.map(() => "?").join(",");
-      const { results } = await env.GUESTBOOK.prepare(
+      const { results } = await session.prepare(
         "SELECT * FROM messages WHERE id IN (" + placeholders + ") ORDER BY id DESC"
       ).bind(...ids).all();
       return json({ list: (results || []).map(normalize) });
     }
 
     /* 获取全部留言（按 id 倒序，id 递增即时间递增） */
-    const { results } = await env.GUESTBOOK.prepare(
+    const { results } = await session.prepare(
       "SELECT * FROM messages ORDER BY id DESC"
     ).all();
     return json({ list: (results || []).map(normalize) });
@@ -124,8 +125,9 @@ export async function onRequestPost(context) {
     /* IP 哈希 + 频率限制 */
     const ip = request.headers.get("CF-Connecting-IP") || "";
     const ipHash = await hashIP(ip);
+	const session = env.GUESTBOOK.withSession("first-primary");
 
-    const recent = await env.GUESTBOOK.prepare(
+    const recent = await session.prepare(
       "SELECT created_at FROM messages WHERE ip_hash = ? ORDER BY created_at DESC LIMIT 1"
     ).bind(ipHash).first();
 
@@ -141,13 +143,13 @@ export async function onRequestPost(context) {
        INSERT...SELECT 在 D1 单写者锁下原子执行；
        聚合查询空表仍返回 1 行（MAX 为 NULL → COALESCE 取 0 → id=1），故首条留言 id=1 */
     const createdAt = new Date().toISOString();
-    await env.GUESTBOOK.prepare(
+    await session.prepare(
       "INSERT INTO messages (id, nickname, body, avatar, ip_hash, created_at) " +
       "SELECT COALESCE(MAX(id), 0) + 1, ?, ?, ?, ?, ? FROM messages"
     ).bind(nickname, body, avatar || null, ipHash, createdAt).run();
 
     /* 取回刚插入的留言（通过 ip_hash + created_at 定位，确保返回正确 id） */
-    let inserted = await env.GUESTBOOK.prepare(
+    let inserted = await session.prepare(
       "SELECT * FROM messages WHERE ip_hash = ? AND created_at = ? ORDER BY id DESC LIMIT 1"
     ).bind(ipHash, createdAt).first();
 
