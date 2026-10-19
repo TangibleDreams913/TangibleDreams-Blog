@@ -74,7 +74,7 @@
 /* ---------- 留言卡片 ---------- */
 .guestbook-wall {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
   gap: 20px;
 }
 .gb-card {
@@ -195,6 +195,7 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 5;
+  line-clamp: 5;
   max-height: 8.5em;
   overflow: hidden;
 }

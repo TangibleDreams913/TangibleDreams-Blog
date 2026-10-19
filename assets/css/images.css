@@ -3,11 +3,14 @@
    加载页面：/index.html（精选图片）、/images/index.html（图片画廊）
    ============================================================ */
 
+.project-grid .image-grid {
+  --grid-min: 250px;
+}
 /* ---------- 图片卡片 ---------- */
 .image-card {
   display: flex;
   flex-direction: column;
-  padding: 12px;
+  min-width: 0;
 }
 .img-thumb-btn {
   display: block;

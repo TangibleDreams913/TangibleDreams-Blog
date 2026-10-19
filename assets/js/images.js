@@ -69,10 +69,9 @@
       return;
     }
     box._imageItems = items;
-    var cls = "project-grid project-grid-" + (perRow || 2);
-    box.innerHTML = '<div class="' + cls + '">' +
-      items.map(function (item, idx) { return imageCardHTML(item, idx); }).join("") + "</div>";
-
+    void perRow;
+    box.innerHTML = '<div class="project-grid image-grid">' +
+    items.map(function (item, idx) { return imageCardHTML(item, idx); }).join("") +"</div>";
     if (!box._imageBound) {
       box.addEventListener("click", function (e) {
         var btn = e.target.closest(".img-thumb-btn");
