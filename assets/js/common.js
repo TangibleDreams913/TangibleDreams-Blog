@@ -11,7 +11,7 @@
   /* ---------- 站点外链配置（换账号只改这一块） ---------- */
   var SITE_NAME = "TangibleDreams";
   /* 头像是站内本地图片，不从 GitHub 拉取 */
-  var GITHUB_AVATAR = "/assets/icons/head.png";
+  var SITE_AVATAR = "/assets/icons/head.png";
   var GITHUB_USER = "YOUR_GITHUB_USERNAME";
   var GITHUB_HOME = "https://github.com/" + GITHUB_USER;
   var BILIBILI_HOME = "YOUR_BILIBILI_URL";
@@ -108,7 +108,7 @@
 
   /* 暴露常量给子模块（避免重复硬编码） */
   global.SITE_NAME = SITE_NAME;
-  global.GITHUB_AVATAR = GITHUB_AVATAR;
+  global.SITE_AVATAR = SITE_AVATAR;
   global.GITHUB_HOME = GITHUB_HOME;
   global.BILIBILI_HOME = BILIBILI_HOME;
   global.PIXIV_HOME = PIXIV_HOME;
@@ -344,7 +344,7 @@
     return (
       '<a class="nav-avatar-link" href="' + homeHref + '" aria-label="' +
         utils.escapeHTML(SITE_NAME) + ' 首页">' +
-        '<img class="nav-avatar" src="' + GITHUB_AVATAR + '" alt="avatar" ' +
+        '<img class="nav-avatar" src="' + SITE_AVATAR + '" alt="avatar" ' +
         'onerror="this.style.visibility=\'hidden\'"></a>' +
       '<a class="nav-id" href="' + homeHref + '">' +
         SITE_NAME + "</a>" +
@@ -354,13 +354,13 @@
       '<div class="nav-more-panel" role="menu" aria-hidden="true">' + panelLinks + "</div>" +
       '<div class="nav-spacer"></div>' +
       '<div class="nav-right">' +
-        '<a class="github-link" href="' + GITHUB_HOME + '" target="_blank" rel="noopener">' +
+        '<a class="ext-link" href="' + GITHUB_HOME + '" target="_blank" rel="noopener">' +
           GITHUB_ICON_SVG + "<span>GitHub</span></a>" +
-        '<a class="github-link bilibili-link" href="' + BILIBILI_HOME + '" target="_blank" rel="noopener">' +
+        '<a class="ext-link bilibili-link" href="' + BILIBILI_HOME + '" target="_blank" rel="noopener">' +
           BILIBILI_ICON_SVG + "<span>Bilibili</span></a>" +
-        '<a class="github-link pixiv-link" href="' + PIXIV_HOME + '" target="_blank" rel="noopener">' +
+        '<a class="ext-link pixiv-link" href="' + PIXIV_HOME + '" target="_blank" rel="noopener">' +
           PIXIV_ICON_SVG + "<span>Pixiv</span></a>" +
-        '<a class="github-link steam-link" href="' + STEAM_PROFILE + '" target="_blank" rel="noopener">' +
+        '<a class="ext-link steam-link" href="' + STEAM_PROFILE + '" target="_blank" rel="noopener">' +
           STEAM_ICON_SVG + "<span>Steam</span></a>" +
         '<button class="theme-toggle" type="button" aria-label="切换主题">' +
           SUN_SVG + MOON_SVG + "</button>" +

@@ -129,8 +129,8 @@
     });
 
     /* 精选文章：从 /article/star.json 加载，每行 2 个 */
-    fetchStararticle().then(function (list) {
-      mountNovelGrid("#featured-article", list.slice(0, 2), 2);
+    fetchStarArticles().then(function (list) {
+      mountArticleGrid("#featured-article", list.slice(0, 2), 2);
     });
 
     /* 精选图片：从 /images/star.json 加载，每行 3 个 */

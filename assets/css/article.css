@@ -4,17 +4,17 @@
    ============================================================ */
 
 /* ---------- 文章卡片 ---------- */
-.novel-card {
+.article-card {
   display: flex;
   flex-direction: column;
 }
-.novel-card .nc-title {
+.article-card .ac-title {
   font-size: 17px;
   font-weight: 700;
   color: var(--text);
   margin-bottom: 6px;
 }
-.novel-card .nc-meta {
+.article-card .ac-meta {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -23,10 +23,10 @@
   color: var(--text-muted);
   margin-bottom: 10px;
 }
-.novel-card .nc-meta .nc-sep {
+.article-card .ac-meta .ac-sep {
   opacity: 0.6;
 }
-.novel-card .nc-desc {
+.article-card .ac-desc {
   color: var(--text-muted);
   font-size: 14px;
   line-height: 1.6;
@@ -34,7 +34,7 @@
   margin-bottom: 14px;
   min-height: 44px;
 }
-.novel-card .nc-actions {
+.article-card .ac-actions {
   display: flex;
   gap: 10px;
   margin-top: auto;

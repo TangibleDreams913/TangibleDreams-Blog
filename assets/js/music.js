@@ -101,7 +101,7 @@
       box.innerHTML = '<div class="status-box">暂无音乐。</div>';
       return;
     }
-    var cls = "project-grid project-grid-" + (perRow || 2);
+    var cls = "card-grid card-grid-" + (perRow || 2);
     /* 重渲染（如搜索过滤）前先卸载旧播放器，避免旧音频脱离文档后仍在播放 */
     if (global.MusicPlayer && global.MusicPlayer.teardown) global.MusicPlayer.teardown(box);
     box.innerHTML = '<div class="' + cls + '">' +

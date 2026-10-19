@@ -70,7 +70,7 @@
     }
     box._imageItems = items;
     void perRow;
-    box.innerHTML = '<div class="project-grid image-grid">' +
+    box.innerHTML = '<div class="card-grid image-grid">' +
     items.map(function (item, idx) { return imageCardHTML(item, idx); }).join("") +"</div>";
     if (!box._imageBound) {
       box.addEventListener("click", function (e) {

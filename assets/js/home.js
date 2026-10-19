@@ -10,7 +10,7 @@
 
   var utils = global.Utils;
   var root = global.root;
-  var GITHUB_AVATAR = global.GITHUB_AVATAR;
+  var SITE_AVATAR = global.SITE_AVATAR;
   var GITHUB_HOME = global.GITHUB_HOME;
 
   /* ---------- 个人信息 ----------
@@ -23,8 +23,8 @@
 
   function fetchLocalProfile() {
     var p = Object.assign({}, FALLBACK_PROFILE);
-    p.avatar = GITHUB_AVATAR;
-    p.html_url = GITHUB_HOME;
+    p.avatar = SITE_AVATAR;
+    p.homeUrl = GITHUB_HOME;
     return Promise.resolve(p);
   }
   global.fetchLocalProfile = fetchLocalProfile;

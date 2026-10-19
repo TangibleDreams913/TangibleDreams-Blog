@@ -29,7 +29,7 @@
 
   /* 并行拉取各数据源计算统计 */
   Promise.all([
-    fetch("/article/NovelList.json").then(function (r) { return r.json(); }).catch(function () { return []; }),
+    fetch("/article/ArticleList.json").then(function (r) { return r.json(); }).catch(function () { return []; }),
     fetch("/images/ImageList.json").then(function (r) { return r.json(); }).catch(function () { return []; }),
     fetch("/music/MusicList.json").then(function (r) { return r.json(); }).catch(function () { return []; }),
     fetch("/api/guestbook").then(function (r) { return r.json(); }).catch(function () { return { list: [] }; })

@@ -218,7 +218,7 @@ img { max-width: 100%; display: block; }
   gap: 12px;
 }
 
-.site-nav .github-link {
+.site-nav .ext-link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -231,12 +231,12 @@ img { max-width: 100%; display: block; }
   background: var(--surface);
   transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
 }
-.site-nav .github-link:hover {
+.site-nav .ext-link:hover {
   border-color: var(--link);
   color: var(--link);
   transform: translateY(-1px);
 }
-.site-nav .github-link svg { width: 18px; height: 18px; }
+.site-nav .ext-link svg { width: 18px; height: 18px; }
 
 /* 主题切换按钮 */
 .theme-toggle {
@@ -309,14 +309,14 @@ img { max-width: 100%; display: block; }
 }
 
 /* ---------- 卡片网格（文章 / 图片 / 音乐 / 好友共用） ---------- */
-.project-grid {
+.card-grid {
   --grid-min: 320px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(var(--grid-min), 100%), 1fr));
   gap: 20px;
 }
-.project-grid-2 { grid-template-columns: repeat(2, 1fr); }
-.project-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.card-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.card-grid-3 { grid-template-columns: repeat(3, 1fr); }
 
 /* ---------- 按钮 ---------- */
 .btn {
@@ -508,17 +508,17 @@ img { max-width: 100%; display: block; }
 }
 
 @media (max-width: 1200px) {
-  .site-nav .github-link {
+  .site-nav .ext-link {
     padding: 0 0;
     width: 36px;
     height: 36px;
   }
 
-  .site-nav .github-link span {
+  .site-nav .ext-link span {
     display: none;
   }
 
-  .site-nav .github-link svg {
+  .site-nav .ext-link svg {
     margin: 0 auto;
     width: 18px;
     height: 18px;
@@ -529,10 +529,10 @@ img { max-width: 100%; display: block; }
 @media (max-width: 900px) {
   .site-nav { padding: 0 12px; gap: 8px; }
   .site-nav .nav-id { display: none; }
-  .project-grid-2, .project-grid-3 { grid-template-columns: 1fr; }
+  .card-grid-2, .card-grid-3 { grid-template-columns: 1fr; }
   .search-box { width: 150px; max-width: 50vw; }
 
-  .site-nav .github-link {
+  .site-nav .ext-link {
     display: inline-flex;
   }
 
@@ -595,20 +595,20 @@ img { max-width: 100%; display: block; }
     gap: 4px;
   }
 
-  .nav-right .github-link {
+  .nav-right .ext-link {
     width: 36px;
     height: 36px;
     padding: 0 6px;
   }
 
-  .nav-right .github-link svg {
+  .nav-right .ext-link svg {
     width: 24px;
     height: 24px;
   }
 }
 
 @media (max-width: 450px) {
-  .nav-right .github-link {
+  .nav-right .ext-link {
     display: none;
   }
 }

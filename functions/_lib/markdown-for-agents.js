@@ -100,7 +100,7 @@ function estimateTokens(text) {
 
 /* 首页 */
 async function renderHome(env) {
-  const novelList = await fetchJSON(env, "/article/NovelList.json", []);
+  const articleList = await fetchJSON(env, "/article/ArticleList.json", []);
   const imgList = await fetchJSON(env, "/images/ImageList.json", []);
   const musicList = await fetchJSON(env, "/music/MusicList.json", []);
 
@@ -116,11 +116,11 @@ async function renderHome(env) {
   md += "- [关于](/about/index.html)\n";
   md += "- [RSS](/rss.xml)\n\n";
 
-  if (Array.isArray(novelList) && novelList.length) {
+  if (Array.isArray(articleList) && articleList.length) {
     md += section("精选文章") + "\n";
     md += "| 标题 | 作者 | 简介 | 阅读 |\n";
     md += "| --- | --- | --- | --- |\n";
-    novelList.forEach(function (it) {
+    articleList.forEach(function (it) {
       const title = oneLine(it.title || it.id || "未命名文章");
       const author = oneLine(it.author || "");
       const desc = oneLine(it.description || "");
@@ -158,17 +158,17 @@ async function renderHome(env) {
 
 /* 文章列表：/article/index.html，也作为任意 /article/* 的兜底 */
 async function renderArticleList(env) {
-  const novelList = await fetchJSON(env, "/article/NovelList.json", []);
+  const articleList = await fetchJSON(env, "/article/ArticleList.json", []);
   let md = section("全部文章") + "\n\n";
 
-  if (!Array.isArray(novelList) || !novelList.length) {
+  if (!Array.isArray(articleList) || !articleList.length) {
     md += "暂未收录文章，请等待博主上传。\n";
     return md;
   }
 
   md += "| 标题 | 作者 | 简介 | 阅读 |\n";
   md += "| --- | --- | --- | --- |\n";
-  novelList.forEach(function (it) {
+  articleList.forEach(function (it) {
     const title = oneLine(it.title || it.id || "未命名文章");
     const author = oneLine(it.author || "");
     const desc = oneLine(it.description || "");
@@ -182,8 +182,8 @@ async function renderArticleList(env) {
 
 /* 文章阅读页：/article/reader.html?id=xxx —— 直接输出正文纯文本 */
 async function renderArticleReader(env, id) {
-  const novelList = await fetchJSON(env, "/article/NovelList.json", []);
-  const item = (Array.isArray(novelList) ? novelList : []).find(function (it) {
+  const articleList = await fetchJSON(env, "/article/ArticleList.json", []);
+  const item = (Array.isArray(articleList) ? articleList : []).find(function (it) {
     return String(it.id) === String(id);
   });
 
@@ -283,7 +283,7 @@ async function renderFriends(env) {
 
 /* 关于页：站点统计 + 联系方式 + 隐私（说明性静态内容） */
 async function renderAbout(env) {
-  const articleList = await fetchJSON(env, "/article/NovelList.json", []);
+  const articleList = await fetchJSON(env, "/article/ArticleList.json", []);
   const imgList = await fetchJSON(env, "/images/ImageList.json", []);
   const musicList = await fetchJSON(env, "/music/MusicList.json", []);
 
@@ -423,8 +423,8 @@ async function buildMarkdown(context) {
 
 /* 文章阅读页：连同 frontmatter 元信息一起返回，正文直接输出纯文本 */
 async function renderArticleReaderMeta(env, id) {
-  const novelList = await fetchJSON(env, "/article/NovelList.json", []);
-  const item = (Array.isArray(novelList) ? novelList : []).find(function (it) {
+  const articleList = await fetchJSON(env, "/article/ArticleList.json", []);
+  const item = (Array.isArray(articleList) ? articleList : []).find(function (it) {
     return String(it.id) === String(id);
   });
   const title = oneLine((item && (item.title || item.id)) || "文章阅读");

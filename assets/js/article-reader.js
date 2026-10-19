@@ -1,7 +1,7 @@
 /* ============================================================
    article-reader.js - 文章在线阅读页专属逻辑
-   功能：按 ?id= 从 NovelList.json 查找文章，加载 TXT 并渲染阅读界面
-   依赖：common.js（Utils / root）、article.js（fetchNovelList）
+   功能：按 ?id= 从 ArticleList.json 查找文章，加载 TXT 并渲染阅读界面
+   依赖：common.js（Utils / root）、article.js（fetchArticleList）
    加载页面：/article/reader.html
    ============================================================ */
 
@@ -47,7 +47,7 @@
 
     if (bodyEl) bodyEl.innerHTML = '<div class="status-box">加载中…</div>';
 
-    fetchNovelList().then(function (list) {
+    fetchArticleList().then(function (list) {
       var item = null;
       for (var i = 0; i < list.length; i++) {
         if (list[i].id === id) { item = list[i]; break; }

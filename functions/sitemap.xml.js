@@ -1,12 +1,12 @@
 /* functions/sitemap.xml.js
    动态生成 sitemap → /sitemap.xml
-   读取 /article/NovelList.json，将每部文章阅读页加入 sitemap；
+   读取 /article/ArticleList.json，将每部文章阅读页加入 sitemap；
    叠加静态栏目页（首页、文章/图片/音乐/好友/留言/关于、rss.xml）。 */
 const SITE = "https://tangibledreams.top";
-const article = "/article/";
+const ARTICLE_DIR = "/article/";
 
-function novelHref(id) {
-  return article + "reader.html?id=" + encodeURIComponent(id);
+function articleHref(id) {
+  return ARTICLE_DIR + "reader.html?id=" + encodeURIComponent(id);
 }
 
 function escapeXML(s) {
@@ -31,14 +31,14 @@ var STATIC_PAGES = [
 
 export async function onRequestGet(context) {
   var env = context.env;
-  var article = [];
+  var list = [];
   if (env && env.ASSETS) {
     try {
-      var resp = await env.ASSETS.fetch(new Request(SITE + article + "NovelList.json"));
-      if (resp.ok) article = await resp.json();
+      var resp = await env.ASSETS.fetch(new Request(SITE + ARTICLE_DIR + "ArticleList.json"));
+      if (resp.ok) list = await resp.json();
     } catch (e) {}
   }
-  if (!Array.isArray(article)) article = [];
+  if (!Array.isArray(list)) list = [];
 
   var xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
   xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
@@ -51,9 +51,9 @@ export async function onRequestGet(context) {
     xml += "  </url>\n";
   });
 
-  article.forEach(function (it) {
+  list.forEach(function (it) {
     xml += "  <url>\n";
-    xml += "    <loc>" + escapeXML(SITE + novelHref(it.id)) + "</loc>\n";
+    xml += "    <loc>" + escapeXML(SITE + articleHref(it.id)) + "</loc>\n";
     xml += "    <changefreq>monthly</changefreq>\n";
     xml += "    <priority>0.7</priority>\n";
     xml += "  </url>\n";

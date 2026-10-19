@@ -52,7 +52,7 @@
 ├── article/
 │   ├── index.html              # 文章列表
 │   ├── reader.html             # 文章在线阅读页
-│   ├── NovelList.json          # 文章清单
+│   ├── ArticleList.json        # 文章清单
 │   ├── star.json               # 首页精选文章
 │   ├── articles/               # 存放文章 TXT 文件
 │   └── weinidingzhi.txt        # 文章正文（示例）
@@ -146,15 +146,15 @@ wrangler d1 execute tangibledreams-guestbook --remote --file=./schema.sql
 ### 文章
 
 1. 将 TXT 文件放入 `article/articles/`；
-2. 在 `article/NovelList.json` 中登记：
+2. 在 `article/ArticleList.json` 中登记：
 
    ```json
    {
-     "id": "my-novel",
+     "id": "my-article",
      "title": "文章标题",
      "author": "作者",
      "description": "简介",
-     "file": "articles/my-novel.txt",
+     "file": "articles/my-article.txt",
      "updated": "2026-08-31"
    }
    ```

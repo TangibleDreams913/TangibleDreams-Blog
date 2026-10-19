@@ -1,12 +1,12 @@
 /* functions/rss.xml.js
    动态生成 RSS 2.0 订阅源 → /rss.xml
-   读取 /article/NovelList.json，将每部文章作为一条 item。 */
+   读取 /article/ArticleList.json，将每部文章作为一条 item。 */
 const SITE = "https://tangibledreams.top";
-const article = "/article/";
+const ARTICLE_DIR = "/article/";
 const SUMMARY_MAX = 200;
 
-function novelHref(id) {
-  return article + "reader.html?id=" + encodeURIComponent(id);
+function articleHref(id) {
+  return ARTICLE_DIR + "reader.html?id=" + encodeURIComponent(id);
 }
 
 function escapeXML(s) {
@@ -34,7 +34,7 @@ export async function onRequestGet(context) {
   var list = [];
   if (env && env.ASSETS) {
     try {
-      var resp = await env.ASSETS.fetch(new Request(SITE + article + "NovelList.json"));
+      var resp = await env.ASSETS.fetch(new Request(SITE + ARTICLE_DIR + "ArticleList.json"));
       if (resp.ok) list = await resp.json();
     } catch (e) {}
   }
@@ -48,7 +48,7 @@ export async function onRequestGet(context) {
   xml += "    <lastBuildDate>" + new Date().toUTCString() + "</lastBuildDate>\n";
 
   list.forEach(function (it) {
-    var url = SITE + novelHref(it.id);
+    var url = SITE + articleHref(it.id);
     var title = it.title || it.id || "未命名文章";
     var desc = it.description || it.author || "";
     xml += "    <item>\n";
