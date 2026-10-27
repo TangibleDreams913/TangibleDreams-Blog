@@ -1,6 +1,6 @@
 # TangibleDreams-Blog
 
-个人博客站点，部署于 Cloudflare Pages。零构建即可运行，构建脚本用于生成图片缩略图，并把 WAV / FLAC 等音频转成 MP3（见「音乐」一节）。
+个人博客站点，部署于 Cloudflare Pages。零构建即可运行，构建脚本用于生成图片缩略图，并把 WAV / FLAC 等音频转成 MP3 。
 
 在线访问：<https://tangibledreams.top>
 
